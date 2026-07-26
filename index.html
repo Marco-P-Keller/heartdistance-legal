@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>HeartDistance – Feel how far apart you are, and stay close</title>
+<meta name="description" content="HeartDistance connects exactly two people. See the distance between you, send a pulse, and count down to the day you meet again. No accounts, no ads, no tracking.">
+<meta property="og:title" content="HeartDistance – Feel how far apart you are, and stay close">
+<meta property="og:description" content="An app for two people who miss each other. See your distance, send a pulse, count down to your reunion. No accounts, no ads, no tracking.">
+<meta property="og:type" content="website">
+<meta name="theme-color" content="#0b0b14">
+<style>
+  :root { --bg: #0b0b14; --card: #14131f; --line: #2a2740; --text: #f6f2ec; --muted: #9a93b8; --accent: #ff6b5e; --accent-soft: #ffb4a0; }
+  * { box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; margin: 0; background: var(--bg); color: var(--text); line-height: 1.6; }
+  .wrap { max-width: 680px; margin: 0 auto; padding: 0 20px; }
+  a { color: var(--accent); }
+
+  header { padding: 72px 0 56px; text-align: center; }
+  .mark { font-size: 3rem; line-height: 1; }
+  h1 { font-size: 2rem; margin: 18px 0 8px; letter-spacing: -0.01em; }
+  .tagline { font-size: 1.15rem; color: var(--accent-soft); margin: 0 0 18px; }
+  .lede { color: var(--muted); max-width: 44ch; margin: 0 auto 28px; }
+
+  .cta { display: inline-flex; align-items: center; gap: 10px; background: var(--accent); color: #1a0b0a; font-weight: 600; text-decoration: none; padding: 14px 26px; border-radius: 999px; font-size: 1.05rem; }
+  .cta:hover { background: var(--accent-soft); }
+  .cta-note { display: block; color: var(--muted); font-size: 0.85rem; margin-top: 14px; }
+
+  h2 { font-size: 1.25rem; margin: 0 0 18px; color: var(--accent-soft); }
+  section { padding: 40px 0; border-top: 1px solid var(--line); }
+
+  .cards { display: grid; gap: 14px; }
+  @media (min-width: 560px) { .cards { grid-template-columns: 1fr 1fr; } }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 18px; }
+  .card h3 { margin: 0 0 6px; font-size: 1rem; }
+  .card p { margin: 0; color: var(--muted); font-size: 0.95rem; }
+
+  ol.steps { padding-left: 0; list-style: none; counter-reset: step; margin: 0; }
+  ol.steps li { counter-increment: step; position: relative; padding: 0 0 18px 44px; }
+  ol.steps li::before { content: counter(step); position: absolute; left: 0; top: 0; width: 28px; height: 28px; border-radius: 50%; background: var(--card); border: 1px solid var(--line); color: var(--accent-soft); display: grid; place-items: center; font-size: 0.9rem; font-weight: 600; }
+  ol.steps strong { display: block; }
+  ol.steps span { color: var(--muted); font-size: 0.95rem; }
+
+  .promise { list-style: none; padding: 0; margin: 0; }
+  .promise li { padding-left: 26px; position: relative; margin-bottom: 8px; }
+  .promise li::before { content: "✓"; position: absolute; left: 0; color: var(--accent); }
+
+  .faq dt { font-weight: 600; margin-top: 18px; }
+  .faq dd { margin: 4px 0 0; color: var(--muted); }
+
+  footer { padding: 40px 0 72px; border-top: 1px solid var(--line); color: var(--muted); font-size: 0.9rem; text-align: center; }
+  footer nav { margin-bottom: 12px; }
+  footer nav a { margin: 0 10px; }
+  .lang-note { color: var(--muted); font-size: 0.9rem; text-align: center; margin-top: 8px; }
+</style>
+</head>
+<body>
+
+<!--
+  APP STORE LINK — replace the placeholder below with the real product URL once the
+  app is approved. It appears twice on this page: the hero button and the German section.
+  Format: https://apps.apple.com/app/heartdistance/id1234567890
+-->
+
+<div class="wrap">
+
+<header>
+  <div class="mark">❤️‍🔥</div>
+  <h1>HeartDistance</h1>
+  <p class="tagline">For two people who miss each other.</p>
+  <p class="lede">See how far apart you are right now. Send a pulse when you think of them. Count the days until you meet again.</p>
+  <a class="cta" href="https://apps.apple.com/app/heartdistance">Download on the App Store</a>
+  <span class="cta-note">For iPhone · Free to use · No account needed</span>
+  <p class="lang-note">Deutsche Version weiter unten</p>
+</header>
+
+<section>
+  <h2>What the app does</h2>
+  <div class="cards">
+    <div class="card">
+      <h3>Your live distance</h3>
+      <p>The app shows the distance between you and one other person. It updates when either of you moves. You never see a map or a location history — only the number of kilometres between you.</p>
+    </div>
+    <div class="card">
+      <h3>Send a pulse</h3>
+      <p>Tap once to send a small signal that says “I am thinking of you”. No words needed, and no conversation to keep going.</p>
+    </div>
+    <div class="card">
+      <h3>Your milestones</h3>
+      <p>The app remembers your closest and your farthest distance, and how many pulses you have sent each other.</p>
+    </div>
+    <div class="card">
+      <h3>Countdown to your reunion</h3>
+      <p>Add the date when you will see each other again. The app counts down the days for both of you.</p>
+    </div>
+    <div class="card">
+      <h3>Their weather</h3>
+      <p>See the weather where the other person is, so you know if they need a jacket today.</p>
+    </div>
+    <div class="card">
+      <h3>Built for exactly two</h3>
+      <p>There is no feed, no friend list and no followers. One connection, and nothing else to manage.</p>
+    </div>
+  </div>
+</section>
+
+<section>
+  <h2>How to start</h2>
+  <ol class="steps">
+    <li><strong>Download the app</strong><span>Install HeartDistance on your iPhone from the App Store. You do not need to create an account or type in an email address.</span></li>
+    <li><strong>Share your pairing code</strong><span>The app gives you a short code. Send it to the one person you want to connect with.</span></li>
+    <li><strong>Stay connected</strong><span>Once you are paired, both phones show the same distance, the same milestones and the same countdown.</span></li>
+  </ol>
+</section>
+
+<section>
+  <h2>Our privacy promise</h2>
+  <ul class="promise">
+    <li>No accounts, so there is nothing to sign up for and nothing to leak.</li>
+    <li>No ads and no advertising SDKs.</li>
+    <li>Only your latest location is stored — never a history, never on a map.</li>
+    <li>Your data lives in your own Apple iCloud (CloudKit). We run no servers and cannot read your content.</li>
+    <li>We never sell or share your data.</li>
+  </ul>
+  <p><a href="privacy.html">Read the full privacy policy</a></p>
+</section>
+
+<section>
+  <h2>HeartDistance Plus</h2>
+  <p>The app is free to use. HeartDistance Plus is an optional subscription that unlocks the extra features inside the app. Apple handles the payment, and we never receive your payment details. You can cancel it at any time in your iPhone settings.</p>
+</section>
+
+<section class="faq">
+  <h2>Questions people ask</h2>
+  <dl>
+    <dt>Can the other person see where I am?</dt>
+    <dd>No. They only see how far away you are. There is no map and no address.</dd>
+
+    <dt>Do I need an account?</dt>
+    <dd>No. You connect with a pairing code, and that is all.</dd>
+
+    <dt>Can I connect with more than one person?</dt>
+    <dd>No. HeartDistance is made for exactly two people.</dd>
+
+    <dt>How do I disconnect?</dt>
+    <dd>Choose “Untie the thread” in the settings. This removes your data from the shared record.</dd>
+
+    <dt>Is there an Android version?</dt>
+    <dd>Not at the moment. HeartDistance is an iPhone app and it uses Apple iCloud to sync.</dd>
+  </dl>
+  <p><a href="support.html">More help and how to contact us</a></p>
+</section>
+
+<section>
+  <h2>HeartDistance – auf Deutsch</h2>
+  <p>HeartDistance verbindet genau zwei Menschen. Die App zeigt dir, wie weit du von einem einzigen anderen Menschen entfernt bist. Du kannst einen Puls senden, wenn du an ihn denkst, und die Tage bis zum Wiedersehen zählen.</p>
+  <p>Es gibt keine Konten, keine Werbung und kein Tracking. Nur der jeweils letzte Standort wird gespeichert — nie ein Verlauf, nie auf einer Karte, nie sichtbar für Dritte. Alle Daten liegen in Apples iCloud; wir betreiben keine eigenen Server.</p>
+  <p>Die App ist kostenlos. HeartDistance Plus ist ein optionales Abo, das über Apple abgerechnet wird und jederzeit kündbar ist.</p>
+  <p><a class="cta" href="https://apps.apple.com/app/heartdistance">Im App Store laden</a></p>
+  <p class="cta-note">Für iPhone · Kostenlos · Ohne Konto</p>
+  <p><a href="privacy.html">Datenschutzerklärung</a> · <a href="support.html">Support</a></p>
+</section>
+
+<footer>
+  <nav>
+    <a href="privacy.html">Privacy</a>
+    <a href="support.html">Support</a>
+    <a href="mailto:marco.p.keller@gmail.com">Contact</a>
+  </nav>
+  <p>Made for long distances.</p>
+</footer>
+
+</div>
+
+</body>
+</html>
