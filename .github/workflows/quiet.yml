@@ -30,20 +30,30 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Select the newest Xcode
+      # The image's own Xcode, not the newest one installed.
+      #
+      # Picking the newest looked tidier and cost forty minutes: it selected an
+      # Xcode whose simulator runtime never finishes booting on this image, and
+      # from outside a single xcodebuild call that is indistinguishable from a
+      # hung test. The version that ships with the runner is the one whose
+      # simulators are known to work. Only reach past it if it is too old for
+      # the project format.
+      - name: Choose Xcode
         run: |
           set -euo pipefail
-          ls -d /Applications/Xcode*.app
-          latest=$(ls -d /Applications/Xcode*.app | sort -V | tail -1)
-          echo "Using $latest"
-          sudo xcode-select -s "$latest/Contents/Developer"
           xcodebuild -version
+          major=$(xcodebuild -version | sed -n 's/^Xcode \([0-9][0-9]*\).*/\1/p' | head -1)
+          if [ "${major:-0}" -lt 16 ]; then
+            latest=$(ls -d /Applications/Xcode*.app | sort -V | tail -1)
+            echo "Default Xcode $major is older than 16; switching to $latest"
+            sudo xcode-select -s "$latest/Contents/Developer"
+            xcodebuild -version
+          fi
+          xcrun simctl list runtimes
 
-      # Booted here rather than left to xcodebuild, which boots in silence: a
-      # first boot of a freshly installed Xcode can take minutes, and from
-      # outside it is indistinguishable from a hang.
       - name: Boot a simulator
         id: sim
+        timeout-minutes: 8
         run: |
           set -euo pipefail
           device=$(xcrun simctl list devices available \
