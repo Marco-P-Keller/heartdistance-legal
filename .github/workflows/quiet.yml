@@ -99,6 +99,37 @@ jobs:
             | sed "s|$GITHUB_WORKSPACE/||g" \
             | grep -E "error:|Test Case|Executed |Test Suite .* (passed|failed)|\*\* TEST"
 
+      # Tests prove the rules. They prove nothing about whether the thing
+      # launches, or what it looks like when it does. So: install it, start
+      # it, photograph it, and read back anything it said to the system log.
+      # The picture comes through the log because that is the only channel out
+      # of here, so it is deliberately small — enough to judge a layout, not a
+      # hairline.
+      - name: Look at it
+        if: success()
+        timeout-minutes: 5
+        run: |
+          set -euo pipefail
+          app=$(find ~/Library/Developer/Xcode/DerivedData \
+            -name "Quiet.app" -path "*Debug-iphonesimulator*" | head -1)
+          echo "Installing $app"
+          xcrun simctl install booted "$app"
+          xcrun simctl launch booted com.example.quiet
+          sleep 6
+
+          xcrun simctl io booted screenshot --type=png shot.png
+          sips -Z 420 -s format jpeg -s formatOptions 68 shot.png --out shot.jpg >/dev/null
+          ls -l shot.png shot.jpg
+
+          echo "----BEGIN SCREENSHOT----"
+          base64 -b 200 -i shot.jpg
+          echo "----END SCREENSHOT----"
+
+          echo "----BEGIN APP LOG----"
+          xcrun simctl spawn booted log show --last 60s --style compact \
+            --predicate 'process == "Quiet"' 2>/dev/null | head -40 || echo "(nothing)"
+          echo "----END APP LOG----"
+
       # The full log is thousands of lines of module compilation. What anybody
       # actually needs after a red run is the handful of lines naming what
       # broke, in one place, without scrolling.
