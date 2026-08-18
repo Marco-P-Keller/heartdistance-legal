@@ -22,7 +22,7 @@ jobs:
   test:
     name: Build and test
     runs-on: macos-15
-    timeout-minutes: 30
+    timeout-minutes: 40
     defaults:
       run:
         working-directory: breakthrough/Quiet
@@ -30,25 +30,21 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # The image's own Xcode, not the newest one installed.
+      # The newest Xcode on the image, so the project format is never the
+      # limiting factor.
       #
-      # Picking the newest looked tidier and cost forty minutes: it selected an
-      # Xcode whose simulator runtime never finishes booting on this image, and
-      # from outside a single xcodebuild call that is indistinguishable from a
-      # hung test. The version that ships with the runner is the one whose
-      # simulators are known to work. Only reach past it if it is too old for
-      # the project format.
-      - name: Choose Xcode
+      # A previous version of this file preferred the image's default instead,
+      # on the theory that the newest Xcode's simulator runtime would not boot.
+      # That was wrong. Nothing was hanging: the boot below takes about ninety
+      # seconds, and the run that looked stuck had simply not finished yet. The
+      # note stays as a reminder that a silent step is not evidence of anything,
+      # which is the entire reason the phases below are separate and timed.
+      - name: Select the newest Xcode
         run: |
           set -euo pipefail
+          latest=$(ls -d /Applications/Xcode*.app | sort -V | tail -1)
+          sudo xcode-select -s "$latest/Contents/Developer"
           xcodebuild -version
-          major=$(xcodebuild -version | sed -n 's/^Xcode \([0-9][0-9]*\).*/\1/p' | head -1)
-          if [ "${major:-0}" -lt 16 ]; then
-            latest=$(ls -d /Applications/Xcode*.app | sort -V | tail -1)
-            echo "Default Xcode $major is older than 16; switching to $latest"
-            sudo xcode-select -s "$latest/Contents/Developer"
-            xcodebuild -version
-          fi
           xcrun simctl list runtimes
 
       - name: Boot a simulator
@@ -86,7 +82,7 @@ jobs:
             | grep -E "error:|warning:|\*\* BUILD"
 
       - name: Test
-        timeout-minutes: 10
+        timeout-minutes: 15
         run: |
           set -o pipefail
           xcodebuild test-without-building \
