@@ -39,7 +39,10 @@ jobs:
           sudo xcode-select -s "$latest/Contents/Developer"
           xcodebuild -version
 
-      - name: Pick a simulator
+      # Booted here rather than left to xcodebuild, which boots in silence: a
+      # first boot of a freshly installed Xcode can take minutes, and from
+      # outside it is indistinguishable from a hang.
+      - name: Boot a simulator
         id: sim
         run: |
           set -euo pipefail
@@ -52,37 +55,71 @@ jobs:
             xcrun simctl list devices available >&2
             exit 1
           fi
-          echo "Testing on $device"
+          echo "Booting $device"
+          xcrun simctl boot "$device" || true
+          time xcrun simctl bootstatus "$device" -b
           echo "device=$device" >> "$GITHUB_OUTPUT"
 
-      - name: Test
+      # Split from the run below so that a slow compile and a stuck test are
+      # two different lines in the log rather than one silence.
+      - name: Build for testing
         run: |
           set -o pipefail
-          xcodebuild test \
+          time xcodebuild build-for-testing \
+            -project Quiet.xcodeproj \
+            -scheme Quiet \
+            -destination "platform=iOS Simulator,name=${{ steps.sim.outputs.device }}" \
+            CODE_SIGNING_ALLOWED=NO \
+            2>&1 \
+            | tee build.log \
+            | sed "s|$GITHUB_WORKSPACE/||g" \
+            | grep -E "error:|warning:|\*\* BUILD"
+
+      - name: Test
+        timeout-minutes: 10
+        run: |
+          set -o pipefail
+          xcodebuild test-without-building \
             -project Quiet.xcodeproj \
             -scheme Quiet \
             -destination "platform=iOS Simulator,name=${{ steps.sim.outputs.device }}" \
             -resultBundlePath TestResults.xcresult \
+            -test-timeouts-enabled YES \
+            -maximum-test-execution-time-allowance 60 \
+            -parallel-testing-enabled NO \
             CODE_SIGNING_ALLOWED=NO \
-            | tee build.log
+            2>&1 \
+            | tee -a build.log \
+            | sed "s|$GITHUB_WORKSPACE/||g" \
+            | grep -E "error:|Test Case|Executed |Test Suite .* (passed|failed)|\*\* TEST"
 
-      # Nothing here is allowed to fail quietly: if a warning appears in Quiet's
-      # own sources, it is a thing somebody has to look at.
-      - name: Report warnings
+      # The full log is thousands of lines of module compilation. What anybody
+      # actually needs after a red run is the handful of lines naming what
+      # broke, in one place, without scrolling.
+      - name: Digest
         if: always()
         run: |
-          if grep -E "warning:" build.log > warnings.txt; then
-            echo "### Warnings" >> "$GITHUB_STEP_SUMMARY"
-            sort -u warnings.txt | sed 's/^/    /' >> "$GITHUB_STEP_SUMMARY"
-            sort -u warnings.txt
-          else
-            echo "No warnings." >> "$GITHUB_STEP_SUMMARY"
-          fi
+          {
+            echo "## Quiet"
+            echo
+            echo "### Errors"
+            grep -E "error:" build.log | sed "s|$GITHUB_WORKSPACE/||g" | sort -u | head -40 || echo "None."
+            echo
+            echo "### Failed tests"
+            grep -E "^Test Case .* failed" build.log | sort -u | head -40 || echo "None."
+            echo
+            echo "### Warnings"
+            grep -E "warning:" build.log | sed "s|$GITHUB_WORKSPACE/||g" | sort -u | head -60 || echo "None."
+            echo
+            grep -E "^Executed [0-9]+ test" build.log | tail -2 || true
+          } >> "$GITHUB_STEP_SUMMARY"
 
-      - name: Keep the result bundle
+      - name: Keep the log and the result bundle
         if: failure()
         uses: actions/upload-artifact@v4
         with:
           name: TestResults
-          path: breakthrough/Quiet/TestResults.xcresult
+          path: |
+            breakthrough/Quiet/build.log
+            breakthrough/Quiet/TestResults.xcresult
           retention-days: 7
