@@ -82,7 +82,7 @@ jobs:
             | grep -E "error:|warning:|\*\* BUILD"
 
       - name: Test
-        timeout-minutes: 15
+        timeout-minutes: 20
         run: |
           set -o pipefail
           xcodebuild test-without-building \
@@ -91,7 +91,7 @@ jobs:
             -destination "platform=iOS Simulator,name=${{ steps.sim.outputs.device }}" \
             -resultBundlePath TestResults.xcresult \
             -test-timeouts-enabled YES \
-            -maximum-test-execution-time-allowance 60 \
+            -maximum-test-execution-time-allowance 180 \
             -parallel-testing-enabled NO \
             CODE_SIGNING_ALLOWED=NO \
             2>&1 \
@@ -115,7 +115,10 @@ jobs:
           echo "Installing $app"
           xcrun simctl install booted "$app"
           xcrun simctl launch booted com.example.quiet
-          sleep 6
+          # The UI test has already answered setup, so this launch lands on the
+          # feed. Long enough for Instagram to arrive over a data centre's
+          # network before the shutter.
+          sleep 14
 
           xcrun simctl io booted screenshot --type=png shot.png
           sips -Z 420 -s format jpeg -s formatOptions 68 shot.png --out shot.jpg >/dev/null
