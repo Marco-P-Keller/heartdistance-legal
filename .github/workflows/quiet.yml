@@ -106,7 +106,9 @@ jobs:
       # of here, so it is deliberately small — enough to judge a layout, not a
       # hairline.
       - name: Look at it
-        if: success()
+        # Always, not only when green: a picture of the app in the state that
+        # failed is worth more than no picture at all.
+        if: always()
         timeout-minutes: 5
         run: |
           set -euo pipefail
