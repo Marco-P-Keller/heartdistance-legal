@@ -145,18 +145,23 @@ jobs:
       - name: Digest
         if: always()
         run: |
+          # `grep ... | head` exits with head's status, which is always zero, so
+          # a trailing `|| echo "None."` never fires and an empty section looks
+          # like a broken digest. Collect first, then decide.
+          section() {
+            local found
+            found=$(eval "$2" || true)
+            echo "### $1"
+            echo "${found:-None.}"
+            echo
+          }
+          strip="sed \"s|$GITHUB_WORKSPACE/||g\""
           {
             echo "## Quiet"
             echo
-            echo "### Errors"
-            grep -E "error:" build.log | sed "s|$GITHUB_WORKSPACE/||g" | sort -u | head -40 || echo "None."
-            echo
-            echo "### Failed tests"
-            grep -E "^Test Case .* failed" build.log | sort -u | head -40 || echo "None."
-            echo
-            echo "### Warnings"
-            grep -E "warning:" build.log | sed "s|$GITHUB_WORKSPACE/||g" | sort -u | head -60 || echo "None."
-            echo
+            section "Errors"       "grep -E 'error:' build.log | $strip | sort -u | head -40"
+            section "Failed tests" "grep -E '^Test Case .* failed' build.log | sort -u | head -40"
+            section "Warnings"     "grep -E 'warning:' build.log | $strip | sort -u | head -60"
             grep -E "^Executed [0-9]+ test" build.log | tail -2 || true
           } >> "$GITHUB_STEP_SUMMARY"
 
