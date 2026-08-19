@@ -20,3 +20,5 @@ want five more minutes.
   it and other people's phones.
 * **[docs/what-is-left.md](docs/what-is-left.md)** — everything still unverified
   or undecided, in the order it matters.
+* **[docs/store-listing.md](docs/store-listing.md)** — every field App Store
+  Connect asks for, written out, including the notes for the reviewer.
