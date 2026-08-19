@@ -18,3 +18,5 @@ want five more minutes.
   in one place.
 * **[docs/store-and-legal.md](docs/store-and-legal.md)** — what stands between
   it and other people's phones.
+* **[docs/what-is-left.md](docs/what-is-left.md)** — everything still unverified
+  or undecided, in the order it matters.
