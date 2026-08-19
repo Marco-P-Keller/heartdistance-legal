@@ -48,7 +48,36 @@ jobs:
             echo "Add them under Settings → Secrets and variables → Actions." >&2
             exit 1
           fi
-          echo "All three present."
+
+          # The key is pasted by hand, often from a phone, and the two ways it
+          # goes wrong are silent: only the middle of the file gets copied, or
+          # the header and footer are left behind. Both produce an archive that
+          # fails half an hour later with something unrelated-looking.
+          case "$KEY" in
+            *"BEGIN PRIVATE KEY"*) ;;
+            *)
+              echo "APP_STORE_CONNECT_PRIVATE_KEY does not contain a BEGIN PRIVATE KEY line." >&2
+              echo "Paste the whole .p8 file, including the -----BEGIN----- and" >&2
+              echo "-----END----- lines." >&2
+              exit 1 ;;
+          esac
+          case "$KEY" in
+            *"END PRIVATE KEY"*) ;;
+            *)
+              echo "APP_STORE_CONNECT_PRIVATE_KEY is missing its END PRIVATE KEY line." >&2
+              echo "The paste was cut short — copy the file again, all of it." >&2
+              exit 1 ;;
+          esac
+
+          # Issuer and key IDs are UUID-ish and 10 characters respectively. A
+          # swapped pair is the third classic mistake.
+          if [ ${#KEY_ID} -ne 10 ]; then
+            echo "APP_STORE_CONNECT_KEY_ID should be 10 characters; got ${#KEY_ID}." >&2
+            echo "It may have been swapped with the issuer ID." >&2
+            exit 1
+          fi
+
+          echo "All three present, and the key looks like a key."
 
       - name: Select the newest Xcode
         run: |
