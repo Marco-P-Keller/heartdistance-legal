@@ -120,7 +120,7 @@ jobs:
             -name "Quiet.app" -path "*Debug-iphonesimulator*" | head -1)
           echo "Installing $app"
           xcrun simctl install booted "$app"
-          xcrun simctl launch booted com.example.quiet
+          xcrun simctl launch booted com.connexa.quiet
           # The UI test has already answered setup, so this launch lands on the
           # feed. Long enough for Instagram to arrive over a data centre's
           # network before the shutter.
