@@ -924,3 +924,25 @@ Twelve points to begin with, then twenty-eight, and forty-one now. The row
 clears the home indicator instead of floating over it, which is only worth
 having because the page finally runs the whole way down behind it: under the row
 is Instagram's next photograph rather than a strip of its background.
+
+## The last inch: stop arguing with the page about it
+
+Four rounds went into the strip along the bottom of the screen. A content inset.
+Instagram's floor padding. A `viewport-fit` this project switched on itself and
+then had to refuse at the other end. A frame instead of a request. Each one
+moved the band and none of them removed it, because every one of them was a
+guess about what a stranger's stylesheet keeps clear down there.
+
+So the arguing stops. `env(safe-area-inset-bottom)` is the page's own name for
+"the strip at the bottom I must not draw in" — so the web view is made that much
+taller than the glass, and whatever the page reserves lands off the screen
+entirely. Whatever it is, and however it is spelled next week, it is no longer
+on the phone.
+
+Nothing real is lost. What falls off the bottom is space the page itself set
+aside to be empty, and the scroll view is given the same amount as a bottom
+inset so that a page which *does* end can still be scrolled all the way into
+view — that inset lands in the overhang, where nobody can see it.
+
+On a phone with a home button the system reserves nothing, this adds nothing,
+and the frame is exactly the screen.

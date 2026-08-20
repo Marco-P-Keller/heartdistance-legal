@@ -314,6 +314,14 @@ struct InstagramWebView: UIViewRepresentable {
     /// How much of the top and bottom of the screen belongs to somebody else —
     /// the status bar above, Quiet's own row of controls below.
     var inset: UIEdgeInsets
+    /// How far the view hangs below the bottom of the glass.
+    ///
+    /// The page reserves that much for a bar that is not there, and the view is
+    /// made taller by the same amount so the reservation falls off the screen.
+    /// The scroll view is told about it as a bottom inset so that the end of a
+    /// page that *does* end can still be scrolled all the way into view: the
+    /// inset lands in the overhang, which nobody can see.
+    var overhang: CGFloat = 0
 
     func makeCoordinator() -> Coordinator {
         Coordinator(session: session, surface: surface)
@@ -371,7 +379,7 @@ struct InstagramWebView: UIViewRepresentable {
         // status bar and scrolls up behind it. That is what Instagram does, and
         // it is a property of the page rather than of the view.
         webView.scrollView.contentInsetAdjustmentBehavior = .never
-        webView.scrollView.contentInset = .zero
+        webView.scrollView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: overhang, right: 0)
         // The indicator is the one thing that should still respect the app's
         // furniture: a scroll bar running under the row reads as a fault.
         webView.scrollView.verticalScrollIndicatorInsets = inset
@@ -385,6 +393,9 @@ struct InstagramWebView: UIViewRepresentable {
     func updateUIView(_ webView: WKWebView, context: Context) {
         if webView.scrollView.verticalScrollIndicatorInsets != inset {
             webView.scrollView.verticalScrollIndicatorInsets = inset
+        }
+        if webView.scrollView.contentInset.bottom != overhang {
+            webView.scrollView.contentInset.bottom = overhang
         }
         // The same larger-of-the-two as in `makeUIView`, so that a layout pass
         // that still reports the starting twenty points cannot walk the number

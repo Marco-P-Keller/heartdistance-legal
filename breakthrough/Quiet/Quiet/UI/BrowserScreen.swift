@@ -88,11 +88,32 @@ struct BrowserScreen: View {
                     left: 0,
                     bottom: furniture,
                     right: 0
-                )
+                ),
+                overhang: bottomInset
             )
+            // Taller than the glass, by exactly what the system reserves at
+            // the bottom.
+            //
+            // Four rounds went into arguing with the page about the last inch:
+            // a content inset, Instagram's floor padding, a viewport-fit that
+            // this project switched on itself, a frame instead of a request.
+            // Each moved the band and none of them removed it, because each
+            // was a guess about what a stranger's stylesheet keeps clear down
+            // there.
+            //
+            // This stops guessing. `env(safe-area-inset-bottom)` is the page's
+            // own name for "the strip at the bottom I must not draw in", so the
+            // web view is given that much extra below the screen and the page's
+            // own reservation lands off the glass entirely. Whatever it is, and
+            // however it is spelled this week, it is no longer on the phone.
+            //
+            // Nothing real is lost: what falls off the bottom is the space the
+            // page itself set aside to be empty. On a phone with a home button
+            // the system reserves nothing, this adds nothing, and the frame is
+            // the screen.
             .frame(
                 width: glass.width > 0 ? glass.width : nil,
-                height: glass.height > 0 ? glass.height : nil
+                height: glass.height > 0 ? glass.height + bottomInset : nil
             )
             // Said again here, on the view itself.
             //
