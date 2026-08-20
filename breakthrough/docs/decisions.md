@@ -455,11 +455,54 @@ So the app owns the strip behind the clock and nothing else. The header is
 Instagram's own, which carries the controls, the badges and the behaviour, and
 is by definition exactly like Instagram.
 
-What this costs: Quiet shows Instagram's *website*, so the header is the web
-one — the wordmark with a chevron, a plus and a heart — rather than the app's,
-which centres a feed switcher. Closing that gap would mean rebuilding controls
-that open modals no address can reach. It is the same limit the whole app has,
-in the one place it is most visible.
+## The header is rearranged, not rebuilt
+
+What the paragraph above left standing was a real difference, and it is the one
+anybody holding both apps sees first. Instagram's app puts the plus on the left,
+the title in the middle and the heart on the right. Instagram's website puts the
+title on the left and both icons on the right. Same three controls, different
+places.
+
+The seventh attempt would have been to draw those three natively and wire them
+to the page. It is the obvious move and it is wrong twice over: the plus opens a
+picker that no address reaches, and a control drawn by the app cannot carry the
+badge Instagram draws on the one it replaced. It also fails the way all six
+before it failed — by needing to be right about a document nobody here can see.
+
+So the three are left exactly where they are in the document and moved only in
+the layout. `trim.js` finds them — the heart by its address, the wordmark by
+its, the plus as the control written next to the heart — marks each with an
+attribute, and four rules in `trim.css` put the plus first, the heart last, and
+the title in the middle of the bar rather than in the middle of what is left
+over. The wrappers in between are given `display: contents`, which stops them
+generating a box so that all three become items of the bar itself.
+
+Three properties come out of that, and they are the whole argument:
+
+* **It works and behaves exactly like Instagram**, because it *is* Instagram —
+  its plus, its chevron, its heart, its badges, its modals, and a bar that
+  scrolls away with the feed because it always did.
+* **Nothing is moved in the document.** Instagram's client owns that tree and
+  rebuilds it whenever it likes; a node this script had moved would be a node it
+  puts back. Where a box is laid out is the browser's business and survives
+  every rebuild.
+* **Unsure means untouched.** If any of the three cannot be found, or two of
+  them turn out to be the same piece of the bar, the header is left precisely as
+  Instagram drew it. A header nobody rearranged is a great deal better than one
+  rearranged on a guess.
+
+What this costs: the title still says whatever Instagram's website says, which
+today is the wordmark rather than the app's "For you". That word belongs to the
+control underneath it, and the control is the site's own — putting a different
+word on somebody else's button is how you end up with a header that lies about
+where it goes.
+
+The finding is now testable without a device. `Tools/read-the-header.js` writes
+the bar as a document and asks trim.js what it makes of it, which caught a fault
+no photograph would have shown for a week: the plus was being picked out as the
+control furthest to the right, and on the second pass — after the stylesheet had
+moved it to the left — that was the chevron. The two would have swapped places
+sixty times a second.
 
 ## The row marks where you are
 
