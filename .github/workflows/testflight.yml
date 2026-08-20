@@ -1,0 +1,320 @@
+name: TestFlight
+
+# Never on a push. Uploading a build puts something under somebody's name in
+# somebody's developer account, and consumes a build number that App Store
+# Connect will not hand back. That is a decision, so it is a button.
+on:
+  workflow_dispatch:
+    inputs:
+      note:
+        description: "What is this build for? (appears in the run title)"
+        required: false
+        default: "TestFlight"
+      reclaim:
+        description: "Revoke the oldest Apple Development certificate first (only if the account is full)"
+        type: boolean
+        required: false
+        default: false
+
+concurrency:
+  group: testflight
+  cancel-in-progress: false
+
+env:
+  TEAM_ID: B97SQSQBMR
+  BUNDLE_ID: com.connexa.quiet
+
+jobs:
+  upload:
+    name: Archive and upload
+    runs-on: macos-15
+    timeout-minutes: 45
+    defaults:
+      run:
+        working-directory: breakthrough/Quiet
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # Fail here, with a sentence, rather than thirty minutes later inside
+      # xcodebuild with a stack trace.
+      - name: Check the secrets are there
+        env:
+          ISSUER: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
+          KEY_ID: ${{ secrets.APP_STORE_CONNECT_KEY_ID }}
+          KEY: ${{ secrets.APP_STORE_CONNECT_PRIVATE_KEY }}
+        run: |
+          missing=""
+          [ -n "$ISSUER" ] || missing="$missing APP_STORE_CONNECT_ISSUER_ID"
+          [ -n "$KEY_ID" ] || missing="$missing APP_STORE_CONNECT_KEY_ID"
+          [ -n "$KEY" ]    || missing="$missing APP_STORE_CONNECT_PRIVATE_KEY"
+          if [ -n "$missing" ]; then
+            echo "Missing repository secrets:$missing" >&2
+            echo "Add them under Settings → Secrets and variables → Actions." >&2
+            exit 1
+          fi
+
+          # The key is pasted by hand, often from a phone, and the two ways it
+          # goes wrong are silent: only the middle of the file gets copied, or
+          # the header and footer are left behind. Both produce an archive that
+          # fails half an hour later with something unrelated-looking.
+          case "$KEY" in
+            *"BEGIN PRIVATE KEY"*) ;;
+            *)
+              echo "APP_STORE_CONNECT_PRIVATE_KEY does not contain a BEGIN PRIVATE KEY line." >&2
+              echo "Paste the whole .p8 file, including the -----BEGIN----- and" >&2
+              echo "-----END----- lines." >&2
+              exit 1 ;;
+          esac
+          case "$KEY" in
+            *"END PRIVATE KEY"*) ;;
+            *)
+              echo "APP_STORE_CONNECT_PRIVATE_KEY is missing its END PRIVATE KEY line." >&2
+              echo "The paste was cut short — copy the file again, all of it." >&2
+              exit 1 ;;
+          esac
+
+          # Issuer and key IDs are UUID-ish and 10 characters respectively. A
+          # swapped pair is the third classic mistake.
+          if [ ${#KEY_ID} -ne 10 ]; then
+            echo "APP_STORE_CONNECT_KEY_ID should be 10 characters; got ${#KEY_ID}." >&2
+            echo "It may have been swapped with the issuer ID." >&2
+            exit 1
+          fi
+
+          echo "All three present, and the key looks like a key."
+
+      - name: Select the newest Xcode
+        run: |
+          set -euo pipefail
+          latest=$(ls -d /Applications/Xcode*.app | sort -V | tail -1)
+          sudo xcode-select -s "$latest/Contents/Developer"
+          xcodebuild -version
+
+      # The .p8 never touches the repository and never reaches the log: Actions
+      # masks secret values, and the file lives in a runner directory that is
+      # destroyed with the machine.
+      - name: Write the App Store Connect key
+        id: key
+        env:
+          KEY_ID: ${{ secrets.APP_STORE_CONNECT_KEY_ID }}
+          KEY: ${{ secrets.APP_STORE_CONNECT_PRIVATE_KEY }}
+        run: |
+          set -euo pipefail
+          dir="$RUNNER_TEMP/private_keys"
+          mkdir -p "$dir"
+          path="$dir/AuthKey_${KEY_ID}.p8"
+          printf '%s\n' "$KEY" > "$path"
+          chmod 600 "$path"
+          echo "path=$path" >> "$GITHUB_OUTPUT"
+          # What this run creates on the account, this run gives back. The
+          # cleanup below needs to know where "this run" starts, and a
+          # timestamp taken before anything is signed is the whole of it.
+          echo "SIGNING_SINCE=$(date -u +%s)" >> "$GITHUB_ENV"
+
+      # One virtual environment, used by both ends of the run. Nothing here
+      # touches the build; if it fails, the archive still goes ahead and the
+      # account simply keeps the certificate.
+      - name: A way to talk to App Store Connect
+        id: asc
+        continue-on-error: true
+        run: |
+          set -euo pipefail
+          python3 -m venv "$RUNNER_TEMP/asc"
+          "$RUNNER_TEMP/asc/bin/pip" install --quiet "pyjwt[crypto]"
+
+      # Only when the box was ticked. It revokes something, so it is a decision
+      # taken per run by the person who owns the account — the same reasoning
+      # that makes this whole workflow a button rather than a push.
+      - name: Make room for a certificate
+        if: inputs.reclaim && steps.asc.outcome == 'success'
+        env:
+          KEY_PATH: ${{ steps.key.outputs.path }}
+          KEY_ID: ${{ secrets.APP_STORE_CONNECT_KEY_ID }}
+          ISSUER: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
+        run: |
+          "$RUNNER_TEMP/asc/bin/python" \
+            "$GITHUB_WORKSPACE/.github/scripts/certificates.py" reclaim
+
+      # The run number, so App Store Connect never sees a build number twice.
+      # It only ever goes up, which is the one thing it has to do.
+      - name: Archive
+        env:
+          KEY_PATH: ${{ steps.key.outputs.path }}
+          KEY_ID: ${{ secrets.APP_STORE_CONNECT_KEY_ID }}
+          ISSUER: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
+        run: |
+          set -o pipefail
+          xcodebuild archive \
+            -project Quiet.xcodeproj \
+            -scheme Quiet \
+            -configuration Release \
+            -destination "generic/platform=iOS" \
+            -archivePath "$RUNNER_TEMP/Quiet.xcarchive" \
+            -allowProvisioningUpdates \
+            -authenticationKeyPath "$KEY_PATH" \
+            -authenticationKeyID "$KEY_ID" \
+            -authenticationKeyIssuerID "$ISSUER" \
+            CURRENT_PROJECT_VERSION=${{ github.run_number }} \
+            2>&1 \
+            | tee archive.log \
+            | sed "s|$GITHUB_WORKSPACE/||g" \
+            | grep -E "error:|warning:|\*\* ARCHIVE"
+
+      - name: Upload to App Store Connect
+        env:
+          KEY_PATH: ${{ steps.key.outputs.path }}
+          KEY_ID: ${{ secrets.APP_STORE_CONNECT_KEY_ID }}
+          ISSUER: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
+        run: |
+          set -o pipefail
+          cat > "$RUNNER_TEMP/ExportOptions.plist" <<PLIST
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+          <plist version="1.0">
+          <dict>
+            <key>method</key><string>app-store-connect</string>
+            <key>destination</key><string>upload</string>
+            <key>teamID</key><string>${TEAM_ID}</string>
+            <key>signingStyle</key><string>automatic</string>
+            <key>uploadSymbols</key><true/>
+            <!-- Quiet sets its own build number from the run number above.
+                 Letting Xcode manage it would quietly renumber the thing we
+                 just archived. -->
+            <key>manageAppVersionAndBuildNumber</key><false/>
+          </dict>
+          </plist>
+          PLIST
+
+          xcodebuild -exportArchive \
+            -archivePath "$RUNNER_TEMP/Quiet.xcarchive" \
+            -exportOptionsPlist "$RUNNER_TEMP/ExportOptions.plist" \
+            -exportPath "$RUNNER_TEMP/export" \
+            -allowProvisioningUpdates \
+            -authenticationKeyPath "$KEY_PATH" \
+            -authenticationKeyID "$KEY_ID" \
+            -authenticationKeyIssuerID "$ISSUER" \
+            2>&1 \
+            | tee -a archive.log \
+            | sed "s|$GITHUB_WORKSPACE/||g" \
+            | grep -E "error:|warning:|Upload|\*\* EXPORT"
+
+      # Xcode cannot reuse a certificate whose private key it does not have,
+      # and a fresh runner never has one — so every upload asks App Store
+      # Connect for a new one. Apple allows two of the development kind. Three
+      # runs and the account is full, which is precisely how two runs failed:
+      # not on the app, on a slot.
+      #
+      # So the run hands back what it borrowed, whether it got as far as an
+      # upload or not. See .github/scripts/certificates.py for what it will and
+      # will not touch. It never fails the run: a certificate left behind is
+      # tomorrow's problem, and a red tick on a build that reached TestFlight is
+      # a lie.
+      - name: Give the certificate back
+        if: always() && steps.asc.outcome == 'success'
+        env:
+          KEY_PATH: ${{ steps.key.outputs.path }}
+          KEY_ID: ${{ secrets.APP_STORE_CONNECT_KEY_ID }}
+          ISSUER: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
+        run: |
+          "$RUNNER_TEMP/asc/bin/python" \
+            "$GITHUB_WORKSPACE/.github/scripts/certificates.py" return
+
+      - name: Say what went up
+        if: success()
+        run: |
+          {
+            echo "## Uploaded"
+            echo
+            echo "- Bundle: \`$BUNDLE_ID\`"
+            echo "- Build: ${{ github.run_number }}"
+            echo "- Commit: \`${{ github.sha }}\`"
+            echo
+            echo "It lands in TestFlight after App Store Connect finishes"
+            echo "processing, which takes a few minutes. Nothing has been"
+            echo "submitted for review."
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      # xcodebuild's failures are accurate and unhelpful in equal measure. The
+      # four that actually happen here each have a cause a person can act on,
+      # and each is worth a sentence rather than a search.
+      - name: Say what went wrong
+        if: failure()
+        run: |
+          set -euo pipefail
+          log=archive.log
+          [ -f "$log" ] || exit 0
+
+          if grep -q "Cloud signing permission error" "$log"; then
+            printf '%s\n' \
+              '## App Store Connect refused to create the signing assets' \
+              '' \
+              'Xcode asked for a distribution certificate and a provisioning profile' \
+              'and was turned down. Nothing in this repository can fix that; it is one' \
+              'of three things on the account, in the order they are worth checking.' \
+              '' \
+              '**1. The key needs Admin.** App Manager is enough to ship builds and not' \
+              'enough to create a certificate — this exact error is what that looks' \
+              'like. A key’s access cannot be changed after it is made, so generate a' \
+              'new one with **Admin** at **Users and Access → Integrations → Keys**' \
+              'and replace `APP_STORE_CONNECT_KEY_ID` and' \
+              '`APP_STORE_CONNECT_PRIVATE_KEY`. The issuer ID stays as it is.' \
+              '' \
+              '**2. An agreement is waiting to be signed.** A pending Program License' \
+              'Agreement blocks certificate creation while everything else keeps' \
+              'working. Look for a banner on the App Store Connect home page, and at' \
+              '**Business → Agreements**.' \
+              '' \
+              '**3. The membership is not a paid enrolment.** A free Apple Developer' \
+              'account has a team ID and cannot hold a distribution certificate.' \
+              'Check **developer.apple.com/account → Membership**.' \
+              >> "$GITHUB_STEP_SUMMARY"
+          elif grep -q "maximum number of certificates" "$log"; then
+            printf '%s\n' \
+              '## The account has no room for another certificate' \
+              '' \
+              'Apple allows two **Apple Development** certificates per membership, and' \
+              'the account holds two — so Xcode could not create the one it archives' \
+              'with, and then found no profile to sign against. Read the second error' \
+              'line: it asks for a *development* profile, not a distribution one.' \
+              '' \
+              'Every run now gives back the certificate it created, so the account' \
+              'should not fill up again. If it is full now, it filled up before that' \
+              'existed, and there are two ways to empty it.' \
+              '' \
+              '**From here:** run this workflow again with **Revoke the oldest Apple' \
+              'Development certificate first** ticked. It frees one slot and then' \
+              'builds.' \
+              '' \
+              '**From Apple:** developer.apple.com/account → **Certificates,' \
+              'Identifiers & Profiles → Certificates**, and revoke an **Apple' \
+              'Development** certificate.' \
+              '' \
+              'Either way, nothing already on the App Store or in TestFlight is' \
+              'affected — Apple re-signs what it distributes. Revoking only stops that' \
+              'certificate signing anything new.' \
+              >> "$GITHUB_STEP_SUMMARY"
+          elif grep -q "No suitable application records were found" "$log"; then
+            printf '%s\n' \
+              '## There is no app record yet' \
+              '' \
+              'The build is fine; App Store Connect has nowhere to put it. Create the' \
+              'app once, at **Apps → +**, with bundle ID `com.connexa.quiet`, and run' \
+              'this again.' \
+              >> "$GITHUB_STEP_SUMMARY"
+          elif grep -q "has already been used" "$log"; then
+            printf '%s\n' \
+              '## That build number is taken' \
+              '' \
+              'App Store Connect never re-issues one. This workflow takes the number' \
+              'from the run, so running it again produces the next.' \
+              >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+      - name: Keep the log
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: archive-log
+          path: breakthrough/Quiet/archive.log
+          retention-days: 7
