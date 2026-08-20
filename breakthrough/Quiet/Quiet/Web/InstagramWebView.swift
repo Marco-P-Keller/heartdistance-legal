@@ -277,6 +277,30 @@ final class WebSurface {
 final class QuietWebView: WKWebView {
     var onSafeArea: ((UIEdgeInsets) -> Void)?
 
+    /// The notch, and nothing at the bottom.
+    ///
+    /// This is where the black band above the row actually came from, and it
+    /// took three commits to find because the app never asked for it. The page
+    /// is told to cover the glass — `viewport-fit=cover`, set by trim.js — so
+    /// that trim.css can ask about the notch and keep Instagram's header off
+    /// the clock. Switching that on switches on *every* rule that consults the
+    /// safe area, at both ends: `env(safe-area-inset-bottom)` stopped reading
+    /// zero, and every reservation Instagram makes for the home indicator came
+    /// back as a strip of nothing under Quiet's row, where the next photograph
+    /// belongs.
+    ///
+    /// A stylesheet cannot answer that. `env()` is not a property to override
+    /// and the elements that consult it are somebody else's, all over the page.
+    /// So it is answered here instead, at the source both WebKit and the page
+    /// read from: this view has a top inset and no bottom one. The clock keeps
+    /// its number, and nothing anywhere is asked to keep clear of a strip that
+    /// Quiet's own row is deliberately floating over.
+    override var safeAreaInsets: UIEdgeInsets {
+        var insets = super.safeAreaInsets
+        insets.bottom = 0
+        return insets
+    }
+
     override func safeAreaInsetsDidChange() {
         super.safeAreaInsetsDidChange()
         onSafeArea?(safeAreaInsets)

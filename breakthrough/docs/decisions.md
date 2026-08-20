@@ -850,3 +850,37 @@ this project turned on itself, three commits after complaining about one.
 
 Both are refused now, on `html` and `body` and on anything found holding a floor
 worth eight points or more.
+
+## The bottom inset the page is never told about
+
+`html` and `body` were the wrong place to refuse `env(safe-area-inset-bottom)`,
+and the photograph after that build says so: the band is still there. A
+stylesheet can only reach the elements it can name, and the ones consulting the
+safe area at the bottom are Instagram's, several layers down, generated afresh
+whenever the client feels like it. `env()` is not a property; there is nothing
+to override.
+
+So it is answered where it is asked. The view the page is drawn in reports the
+notch at the top and nothing at the bottom — one override on `QuietWebView`, and
+every rule anywhere on the page that reserves room for the home indicator
+reserves nothing. WebKit reads the same number for its own layout, so a viewport
+inset at the bottom goes with it.
+
+The top is untouched, which is the whole reason `viewport-fit=cover` is on: the
+rule that keeps Instagram's header off the clock still sees the notch, and still
+takes the larger of that and the number the app hands over.
+
+## Two and a half millimetres
+
+The row sat twelve points above the bottom edge of the glass. It sits at
+twenty-eight now — about two and a half millimetres higher on the phone, at
+roughly a hundred and sixty points to the inch, which is what a photograph asked
+for.
+
+It still floats over the home indicator rather than clearing it. A row that
+clears it leaves a band of page between the two that nobody can read and nothing
+can cover, which is the thing this project keeps taking out.
+
+The scroll indicator moves with it: the pill, the air beneath it and the
+system's strip, so a scroll bar stops above the row instead of running beside
+it. Only the indicator — the page itself is given all of the glass, as before.

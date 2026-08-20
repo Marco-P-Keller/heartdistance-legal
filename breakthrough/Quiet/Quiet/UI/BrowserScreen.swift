@@ -236,8 +236,13 @@ struct BrowserScreen: View {
     /// How much of the bottom of the screen the row stands on. The scroll
     /// indicator is the one thing that still respects it: a scroll bar running
     /// underneath the row reads as a fault.
+    ///
+    /// The pill and the air beneath it, and then the system's own strip on top
+    /// of that, so the indicator stops above the row rather than beside it.
+    /// The page itself is given all of this back — it runs on underneath to the
+    /// bottom edge of the glass, which is the whole point of a row that floats.
     private var furniture: CGFloat {
-        isFloating ? Self.barHeight + Self.barGap * 2 + bottomInset : Self.flushHeight
+        isFloating ? Self.barHeight + Self.barGap + bottomInset : Self.flushHeight
     }
 
     /// Whether this phone reserves a strip at the bottom for itself.
@@ -308,7 +313,18 @@ struct BrowserScreen: View {
         .accessibilityAddTraits(here ? .isSelected : [])
     }
 
-    private static let barGap: CGFloat = 12
+    /// How far the pill floats above the bottom edge of the glass.
+    ///
+    /// Sixteen points rather than twelve: about two and a half millimetres
+    /// higher on the phone, which is what was asked for after a photograph.
+    /// Roughly a hundred and sixty points to the inch, so a millimetre is a
+    /// little over six points and the arithmetic is honest rather than a round
+    /// number that happened to look right.
+    ///
+    /// It still sits over the home indicator rather than above it. A row that
+    /// clears the indicator entirely leaves a band of page nobody can read
+    /// between the two, which is the thing this app keeps taking out.
+    private static let barGap: CGFloat = 28
 
     /// What a tap on the row does.
     ///
