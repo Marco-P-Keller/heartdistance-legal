@@ -20,9 +20,9 @@ import UIKit
 ///
 /// The pill draws itself in while the page moves away under your thumb and
 /// comes back out when it stops. It never leaves, because a control that
-/// disappears is a control you end up hunting for. It sits low, over the home
-/// indicator, and the page runs on beneath it to the bottom edge — a row that
-/// floats and a page that stops under it is the worst of both.
+/// disappears is a control you end up hunting for. It sits just clear of the
+/// home indicator, and the page runs on beneath it to the bottom edge — a row
+/// that floats and a page that stops under it is the worst of both.
 ///
 /// The two Quiet needed lived inside Instagram's bar for a while, which is
 /// where they belonged and where they twice failed to appear: a row built by
@@ -213,9 +213,11 @@ struct BrowserScreen: View {
                         reduceMotion ? nil : .spring(response: 0.34, dampingFraction: 0.86),
                         value: surface.isBarCollapsed
                     )
-                    // Low, over the home indicator, the way Instagram's sits.
-                    // The page runs on beneath it to the bottom edge of the
-                    // glass, which is the whole point of a row that floats.
+                    // Just clear of the home indicator, with Instagram's next
+                    // photograph running on beneath it to the bottom edge of
+                    // the glass — which is the whole point of a row that
+                    // floats, and was a black band of Instagram's own until the
+                    // bar behind its row came out. See `hideNavShell`.
                     .padding(.bottom, Self.barGap)
             } else {
                 VStack(spacing: 0) {
@@ -315,16 +317,18 @@ struct BrowserScreen: View {
 
     /// How far the pill floats above the bottom edge of the glass.
     ///
-    /// Sixteen points rather than twelve: about two and a half millimetres
-    /// higher on the phone, which is what was asked for after a photograph.
-    /// Roughly a hundred and sixty points to the inch, so a millimetre is a
-    /// little over six points and the arithmetic is honest rather than a round
-    /// number that happened to look right.
+    /// Twelve points to begin with, then twenty-eight, and forty-one now: two
+    /// photographs, each asking for a couple of millimetres more. Roughly a
+    /// hundred and sixty points to the inch, so a millimetre is a little over
+    /// six points and the arithmetic is honest rather than a round number that
+    /// happened to look right.
     ///
-    /// It still sits over the home indicator rather than above it. A row that
-    /// clears the indicator entirely leaves a band of page nobody can read
-    /// between the two, which is the thing this app keeps taking out.
-    private static let barGap: CGFloat = 28
+    /// It clears the home indicator now rather than floating over it, which is
+    /// only worth having because the page finally runs the whole way down
+    /// behind it. Under the row is Instagram's next photograph; it was a black
+    /// band of Instagram's own until the bar behind its row came out. See
+    /// `hideNavShell` in trim.js.
+    private static let barGap: CGFloat = 41
 
     /// What a tap on the row does.
     ///

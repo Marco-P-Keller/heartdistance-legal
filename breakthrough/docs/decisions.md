@@ -884,3 +884,43 @@ can cover, which is the thing this project keeps taking out.
 The scroll indicator moves with it: the pill, the air beneath it and the
 system's strip, so a scroll bar stops above the row instead of running beside
 it. Only the indicator — the page itself is given all of the glass, as before.
+
+## The band was never a gap
+
+Four fixes went into the black band above the row, and every one of them read it
+as a gap — the page stopping short of the bottom of the glass. A taller frame,
+the floor padding taken up, `html` and `body` refused their bottom padding, the
+bottom safe area zeroed at the view so no `env()` anywhere could reserve a
+strip. The photograph after the fourth shows the band exactly where it was.
+
+That is the answer, and it took four builds to hear it. A band that survives
+everything done to the page's *size* is not a hole in the page. It is an
+element, drawn over Instagram's own photograph, in Instagram's own background
+colour: the bar its row hangs in.
+
+`navRow` finds the smallest container holding the five links, because that is
+what has to be measured, read for the signed-in name, and rasterised for its
+icons. What carries the colour, the border and the forty-odd points of height is
+a wrapper further out. Hiding the links empties the bar without taking the bar
+away, and an empty bar is a black band.
+
+So the wrapper goes too, found the way everything else in trim.js is found — by
+asking the browser what it did. Pinned to the bottom of the glass, short enough
+to be a bar rather than a page, and without the feed inside it. That last one is
+the stop: it is the only question that matters when a walk up the tree reaches a
+container nobody meant.
+
+Four checks in the harness. The bar behind the row is hidden with it, a wrapper
+merely in the flow is left alone and keeps its floor taken up, a wrapper with
+`main` inside it is the page, and one as tall as the page is not a bar.
+
+The four earlier fixes stay. None of them was wrong — a page that owns the whole
+glass and reserves nothing at the bottom is what this app wants either way, and
+each of them removes a band this one would have left behind.
+
+## Another two millimetres
+
+Twelve points to begin with, then twenty-eight, and forty-one now. The row
+clears the home indicator instead of floating over it, which is only worth
+having because the page finally runs the whole way down behind it: under the row
+is Instagram's next photograph rather than a strip of its background.
