@@ -74,8 +74,12 @@ div[role="button"]:has(> svg[aria-label="Reels"]) {
  * page that loads before the value does is merely flush rather than broken.
  */
 
+:root {
+  --quiet-clock: max(var(--quiet-top, 0px), env(safe-area-inset-top, 0px));
+}
+
 body {
-  padding-top: var(--quiet-top, 0px) !important;
+  padding-top: var(--quiet-clock, 0px) !important;
 }
 
 /* ── The header, in the arrangement Instagram's own app uses ────────────── */
@@ -157,26 +161,32 @@ body {
 }
 
 /*
- * A bar the page has pinned to the top of the viewport is pinned under the
- * clock: what starts the document below the status bar is a padding on the
- * document, and a pinned element has left the document's flow.
+ * Whatever the page has pinned to the top of the glass, pinned to the bottom of
+ * the clock instead.
  *
- * Instagram does not pin this one today — it scrolls away with the feed, which
- * is exactly what the app's does and took a photograph to establish. It has
- * pinned it before. The attribute is only ever set on a bar measured as pinned,
- * so on the way things are this rule matches nothing at all.
+ * This is the rule the header was missing, and it is the whole of the
+ * collision in the photograph. `position: sticky` measures its offset from the
+ * edge of the scrollport, and the scrollport does not care what the document is
+ * padded by — so the padding that starts the feed below the status bar moves
+ * every part of the page except the one part drawn over the clock.
+ *
+ * Set by trim.js on the pinned element itself, which is usually a wrapper
+ * rather than the row of controls, and which is asked of the browser rather
+ * than of a stylesheet.
  */
 
-[data-quiet-header="pinned"] {
-  top: var(--quiet-top, 0px) !important;
+[data-quiet-pinned] {
+  top: var(--quiet-clock, 0px) !important;
 }
 
 /*
- * Something for the centred title to be centred *in*. A loose bar is given a
- * position of its own; a pinned one already has one, and taking it away to add
- * it back would be unpinning the bar in order to keep its title in the middle.
+ * Something for the centred title to be centred *in*.
+ *
+ * Only when the bar is not itself the pinned element: a sticky bar already
+ * establishes one, and taking its position away to add it back would be
+ * unpinning the header in order to keep its title in the middle.
  */
 
-[data-quiet-header="loose"] {
+[data-quiet-header]:not([data-quiet-pinned]) {
   position: relative !important;
 }

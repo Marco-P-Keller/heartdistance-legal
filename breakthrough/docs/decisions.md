@@ -455,6 +455,56 @@ So the app owns the strip behind the clock and nothing else. The header is
 Instagram's own, which carries the controls, the badges and the behaviour, and
 is by definition exactly like Instagram.
 
+## The header was drawn through the clock, twice over
+
+A photograph of the running app, with the wordmark, the plus and the heart
+struck straight through the battery, and two faults behind it. Both had been
+reasoned about at length and neither had been measured.
+
+**The page was never told how tall the status bar is.** The scripts are built
+once, in `makeUIView`, out of whatever the height was at that moment — which is
+the twenty points the state starts at, because the window has not laid anything
+out yet. The real number arrived a moment later and was handed over with
+`evaluateJavaScript`, and that is the trap: the page it reached was the empty
+one a web view starts on. Instagram's document committed afterwards, ran the
+injected script again, and put the twenty points back.
+
+So the number was never wrong for long. It was right on a document nobody ever
+saw, and twenty points on the one everybody did — about seven points of
+clearance for a fifty-nine point status bar. Every photograph of "the header is
+under the clock" was a photograph of this.
+
+It is now said three ways, because one way has already lost it: the scripts are
+rebuilt around the real number so every future document is told before its first
+paint, the document on screen is told again on every commit rather than once,
+and `makeUIView` takes the larger of what the layout reports and what the window
+knows rather than trusting the first pass.
+
+**And the bar is pinned after all.** The note above this one says it is not, on
+the strength of a photograph; the photograph showed a feed at rest, where a
+sticky bar and a bar in the flow look exactly alike. Scrolled, they do not: the
+feed slides underneath it and it stays on the clock.
+
+A padding on the document cannot move it. `position: sticky` measures its offset
+from the edge of the scrollport, and the scrollport does not care what the
+document is padded by — so the padding moves every part of the page except the
+one part drawn over the clock. The earlier search for a pinned bar reported
+finding none, and that was the search's fault: it looked at six ancestors of one
+link, and only at elements as wide as the window. What is pinned is a wrapper.
+
+So trim.js asks the browser — `getComputedStyle`, from the bar upward — and
+whatever is pinned within a point of the top gets `top: var(--quiet-clock)`
+instead. Once lifted it stays lifted, because a lifted bar no longer answers the
+question that found it and would otherwise drop back on the next frame.
+
+`--quiet-clock` is the larger of the app's number and `env(safe-area-inset-top)`,
+which needs `viewport-fit=cover` on the viewport meta. That was tried once and
+written off as doing nothing whatsoever, on the grounds that Instagram's
+stylesheet never consults `env()`. True, and beside the point: the stylesheet
+that needs to consult it is ours. The two are kept together because they fail in
+opposite directions — the app's number can be stale, and WebKit's is zero on a
+phone with no notch.
+
 ## The header is rearranged, not rebuilt
 
 What the paragraph above left standing was a real difference, and it is the one
@@ -503,6 +553,11 @@ no photograph would have shown for a week: the plus was being picked out as the
 control furthest to the right, and on the second pass — after the stylesheet had
 moved it to the left — that was the chevron. The two would have swapped places
 sixty times a second.
+
+The lift is checked there too, and separately, because the two are different
+questions. Rearranging is a nicety and gives up the moment it is unsure. A
+header drawn through the clock is the app looking broken, and has to be put
+right even on a page whose bar is a shape nothing here recognises.
 
 ## The row marks where you are
 

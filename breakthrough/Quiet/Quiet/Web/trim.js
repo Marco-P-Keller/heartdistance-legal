@@ -240,6 +240,68 @@
     document.documentElement.style.setProperty("--quiet-top", top + "px");
   }
 
+  /**
+   * Let the page see the notch, so that trim.css can ask about it.
+   *
+   * `viewport-fit=cover` was tried once and written off as doing nothing
+   * whatsoever, on the grounds that Instagram's stylesheet never consults
+   * `env()`. True, and beside the point: the stylesheet that needs to consult
+   * it is ours. Without this the safe area is flat zero and `env()` in trim.css
+   * answers nothing.
+   *
+   * It is worth having as well as the number the app hands over, not instead of
+   * it, because the two fail in opposite directions. The app's number can be
+   * stale — it has been, for six commits — and WebKit's cannot; WebKit's is
+   * zero on anything without a notch, and the app's is not.
+   */
+  function coverTheGlass() {
+    var meta = document.querySelector('meta[name="viewport"]');
+    if (!meta) return;
+    var content = meta.getAttribute("content") || "";
+    if (content.indexOf("viewport-fit") !== -1) return;
+    meta.setAttribute("content", content + ", viewport-fit=cover");
+  }
+
+  /**
+   * Push whatever is holding the header at the top of the glass down past the
+   * clock.
+   *
+   * The padding that starts the document below the status bar cannot reach a
+   * pinned element: `position: sticky` measures its offset from the edge of the
+   * scrollport, and the scrollport does not care what the document is padded
+   * by. So a bar with `top: 0` sits over the clock at every scroll position
+   * except the very top, which is exactly the photograph — the wordmark, the
+   * plus and the heart drawn straight through the battery.
+   *
+   * A previous version of this looked for that bar and reported finding none,
+   * and the conclusion drawn was that Instagram does not pin its header. The
+   * conclusion was wrong and the search was at fault: it only ever looked at
+   * six ancestors of a link, and only at ones as wide as the window. What is
+   * pinned here is a wrapper, and it is asked of the browser rather than of a
+   * stylesheet, so the answer is true whatever Instagram changed this week.
+   */
+  function liftPinned(bar) {
+    var node = bar;
+    while (node && node !== document.body) {
+      // Once lifted it reads as pinned at the clock's height rather than at
+      // nothing, so the test below would stop recognising it and it would drop
+      // back the next frame. What has been lifted stays lifted.
+      if (node.getAttribute("data-quiet-pinned") !== null) return;
+
+      var style = window.getComputedStyle(node);
+      if (style.position === "sticky" || style.position === "fixed") {
+        var top = parseFloat(style.top);
+        // `auto` parses to nothing, and a sticky element with no top is not
+        // pinned vertically to anything.
+        if (!isNaN(top) && top < 1) {
+          node.setAttribute("data-quiet-pinned", "");
+          return;
+        }
+      }
+      node = node.parentElement;
+    }
+  }
+
   var lastPath = null;
 
   /**
@@ -433,14 +495,21 @@
     flatten(bar, left);
     flatten(bar, right);
 
-    // A bar the page has pinned to the top of the viewport is pinned under the
-    // clock, because the padding that starts the document below the status bar
-    // is a padding on the document and a pinned element has left it. Instagram
-    // does not pin this one today. It has pinned it before.
-    var style = window.getComputedStyle(bar);
-    var pinned = (style.position === "sticky" || style.position === "fixed") &&
-                 parseFloat(style.top || "999") < 1;
-    note(bar, "data-quiet-header", pinned ? "pinned" : "loose");
+    note(bar, "data-quiet-header", "");
+  }
+
+  /**
+   * The lift, which has to happen whether the arrangement did or not.
+   *
+   * Kept apart from `shapeHeader` on purpose. Rearranging is a nicety and gives
+   * up the moment it is unsure; a header drawn through the clock is the app
+   * looking broken, and that must be put right even on a page whose bar is a
+   * shape nothing here recognises.
+   */
+  function liftHeader() {
+    var bar = headerBar();
+    if (!bar) return;
+    liftPinned(bar);
   }
 
   /* ── 1. Taps ──────────────────────────────────────────────────────────── */
@@ -524,11 +593,13 @@
       pending = false;
       var main = document.querySelector("main");
       if (main) trimSuggestions(main);
+      coverTheGlass();
       makeRoom();
       guardLocation();
       sayWhere();
       whoAmI();
       replaceNav();
+      liftHeader();
       shapeHeader();
     });
   }

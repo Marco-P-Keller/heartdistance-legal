@@ -41,11 +41,11 @@ function installBoxes(win) {
   };
 }
 
-async function page(html, url) {
-  const dom = new JSDOM(`<!doctype html><html><body>${html}</body></html>`, {
-    runScripts: "outside-only",
-    url,
-  });
+async function page(html, url, head) {
+  const dom = new JSDOM(
+    `<!doctype html><html><head>${head || ""}</head><body>${html}</body></html>`,
+    { runScripts: "outside-only", url }
+  );
   if (dom.window.document.readyState === "loading") {
     await new Promise((go) => dom.window.addEventListener("load", go));
   }
@@ -189,6 +189,69 @@ const GROUPED = `
   win.drain();
 
   check("the three keep their places once the arrangement has moved them", slots(win), before);
+
+  /* The collision itself, which is a different question from the arrangement
+   * and has to be answered even when the arrangement gives up.
+   *
+   * A pinned bar measures its offset from the edge of the scrollport, and the
+   * scrollport does not care what the document is padded by — so the padding
+   * that starts the feed below the status bar moves every part of the page
+   * except the one part drawn over the clock. */
+  const PINNED = `
+    <div data-name="pinnedwrapper" style="position: sticky; top: 0px;">
+      <div data-name="bar">
+        <div data-name="titlegroup">
+          <a href="/" data-name="wordmark" data-box="8,10,100,24">Instagram</a>
+        </div>
+        <div data-name="icongroup">
+          <button data-name="plus" data-box="300,10,24,24">+</button>
+          <a href="/accounts/activity/" data-name="heart" data-box="340,10,24,24">h</a>
+        </div>
+      </div>
+    </div>
+    <main></main>`;
+
+  const lifted = (win) => {
+    const element = win.document.querySelector("[data-quiet-pinned]");
+    return element ? element.getAttribute("data-name") : null;
+  };
+
+  check(
+    "a sticky wrapper above the bar is what gets lifted off the clock",
+    lifted(await page(PINNED, FEED)),
+    "pinnedwrapper"
+  );
+
+  check(
+    "a bar in the ordinary flow is left where the document put it",
+    lifted(await page(GROUPED, FEED)),
+    null
+  );
+
+  /* Once lifted it reads as pinned at the clock's height rather than at
+   * nothing. A version that re-derived this every frame would stop recognising
+   * it and drop it straight back. */
+  const sticky = await page(PINNED, FEED);
+  const wrapper = sticky.document.querySelector('[data-name="pinnedwrapper"]');
+  wrapper.style.top = "59px"; // what the stylesheet has now done to it
+  sticky.document.querySelector("main").appendChild(sticky.document.createElement("div"));
+  await new Promise((go) => setTimeout(go, 0));
+  sticky.drain();
+  check("what has been lifted stays lifted", lifted(sticky), "pinnedwrapper");
+
+  // The viewport has to admit there is a notch before env() answers anything.
+  const viewport = await page(
+    `<div data-name="bar"></div><main></main>`,
+    FEED,
+    '<meta name="viewport" content="width=device-width, initial-scale=1">'
+  );
+  check(
+    "the viewport is told to cover the glass, so trim.css can ask about it",
+    /viewport-fit=cover/.test(
+      viewport.document.querySelector('meta[name="viewport"]').getAttribute("content")
+    ),
+    true
+  );
 
   process.exit(failures ? 1 : 0);
 })();
