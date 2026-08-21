@@ -66,7 +66,11 @@ final class SpeaksAloudTests: XCTestCase {
         XCTAssertTrue(row.waitForExistence(timeout: 30), "The panel must offer it")
         row.tap()
 
-        let field = app.textFields.firstMatch
+        // By identifier again, and for the same kind of reason: finding
+        // someone is a page inside the browsing screen now rather than a sheet
+        // over the top of it, so Instagram's own page is still in the
+        // hierarchy behind it with fields of its own.
+        let field = app.textFields["search.field"]
         XCTAssertTrue(field.waitForExistence(timeout: 10), "It must open on a field ready to type in")
         field.typeText("quiet")
 
