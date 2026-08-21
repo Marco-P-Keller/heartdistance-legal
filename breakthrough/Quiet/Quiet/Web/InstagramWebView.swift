@@ -580,14 +580,6 @@ struct InstagramWebView: UIViewRepresentable {
                       let surface = BlockedSurface(rawValue: name) else { return }
                 session.report(surface)
 
-            case "settings":
-                // Quiet's mark, tapped beside Instagram's own settings.
-                session.isPanelShowing = true
-
-            case "search":
-                // The magnifying glass, tapped in Quiet's own row.
-                session.isSearchShowing = true
-
             case "where":
                 // Instagram's client changes the address without loading
                 // anything, so this is the only way the row learns it moved.
