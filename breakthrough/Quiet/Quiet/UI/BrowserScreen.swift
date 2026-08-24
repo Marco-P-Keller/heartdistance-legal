@@ -382,26 +382,29 @@ struct BrowserScreen: View {
 
     /// The colour of the band the clock stands on.
     ///
-    /// One step off the page rather than the page's own colour. In the dark the
-    /// page is pure black, and a black band on a black page is not a band at
-    /// all: the time, the signal and the battery float in the same void the
-    /// feed runs in, and the top of the screen has no edge. A grey gives them
-    /// something to stand on, and says where the app's own pixels stop and
-    /// Instagram's begin.
+    /// The page's own colour, sampled from what Instagram actually draws along
+    /// the top of itself, so there is no seam. The app owns these pixels — the
+    /// page's viewport starts underneath them — but nothing about them should
+    /// announce that. The clock stands on the page rather than on a shelf above
+    /// it.
     ///
-    /// Which grey is Instagram's business, not Quiet's. The page publishes its
-    /// own palette and is asked for it, so the band is the exact colour the
-    /// site puts on top of itself — its search fields, its sheets — and follows
-    /// the phone from light to dark, and Instagram through a redesign, without
-    /// anything here being touched. See `WebSurface.chrome`.
+    /// It was one step off the page for a while, on the argument that a band
+    /// wants an edge. In the dark that argument loses: the system's black
+    /// against Instagram's near-black is a hard line across the top of every
+    /// screen, and the grey that replaced it was a second line in a lighter
+    /// colour. Asked for plainly, the answer was no line at all.
+    ///
+    /// Which colour that is stays Instagram's business rather than Quiet's. It
+    /// is sampled rather than written down here, so it follows the phone from
+    /// light to dark, the app from the feed to a story, and Instagram through a
+    /// redesign, with nothing here touched. See `WebSurface.chrome`.
     private var clockBand: Color { surface.chrome ?? Self.systemBand }
 
     /// Until the page has answered, and for a page that has nothing to say.
-    /// `secondarySystemBackground` is the system's own name for one step off
-    /// the page, which is the same idea in the system's own palette — close
-    /// enough to Instagram's that the handover is not something you can catch
-    /// happening.
-    private static let systemBand = Color(uiColor: .secondarySystemBackground)
+    /// The system's own page colour, which is what the cover underneath is
+    /// painted in — so the handover from Quiet's blank to Instagram's page is
+    /// one colour changing, not a band appearing.
+    private static let systemBand = Color(uiColor: .systemBackground)
 
     /// The height every bar along the bottom of an iPhone has been since the
     /// first one, and the height of Instagram's.

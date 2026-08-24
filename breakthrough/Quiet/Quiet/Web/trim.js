@@ -681,29 +681,27 @@
   /* ── The colour the clock stands on ───────────────────────────────────── */
 
   /**
-   * Instagram's own chrome colour, sent up so the app can paint the band
-   * behind the clock in it.
+   * The colour Instagram is drawing along the top of itself, sent up so the
+   * app can paint the band behind the clock in the same one.
    *
    * The app owns the pixels the time and the battery sit on — the page's
    * viewport starts underneath them — so something has to decide what colour
-   * they are. It used to be the system's page colour, which in the dark is
-   * pure black on a page that is also pure black: no band, no edge, and a
-   * clock apparently floating in the feed.
+   * they are, and the system's own page colour is not it: in the dark that is
+   * pure black against Instagram's near-black, and the seam shows as a hard
+   * line across the top of every screen.
    *
-   * The value is read out of the page rather than written down here, because a
-   * hex typed into an app is a guess about somebody else's design that goes
-   * stale without anyone noticing. Instagram publishes its own palette as
-   * custom properties on the root element, and the one wanted here is the
-   * surface it puts *on top of* the page — the colour of its search fields and
-   * its sheets. That is a grey in the dark and a grey in the light, it is
-   * Instagram's grey rather than an approximation of it, and it changes by
-   * itself when the phone changes scheme or Instagram changes its mind.
+   * It was a grey for a while, a deliberate step off the page, on the argument
+   * that a band wants an edge. Asked for plainly, the answer was the other one:
+   * no seam at all. The clock should look like it is standing on the page
+   * rather than on a shelf above it.
+   *
+   * So the colour is sampled from what is actually drawn at the top of the
+   * page rather than named here. A hex typed into an app is a guess about
+   * somebody else's design that goes stale without anyone noticing; a sample
+   * follows Instagram from light to dark, from the feed to a story, and
+   * through a redesign, with nothing here touched.
    */
-  var CHROME_TOKENS = [
-    "--ig-elevated-background",
-    "--ig-secondary-background",
-    "--ig-highlight-background",
-  ];
+  var CHROME_TOKENS = ["--ig-primary-background", "--ig-secondary-background"];
 
   var lastChrome = null;
 
@@ -724,19 +722,19 @@
   }
 
   function chromeColour() {
+    /* What is drawn, first: it is the thing the band has to match, and it is
+     * true on a page whose palette is named nothing this knows. */
+    var drawn = colourAtTop();
+    if (drawn) return drawn;
+
+    /* Nothing opaque to sample — a page mid-rewrite, or one that has painted
+     * nothing yet. Then Instagram's palette, by name. */
     var root = window.getComputedStyle(document.documentElement);
     for (var i = 0; i < CHROME_TOKENS.length; i++) {
       var token = colourFrom(root.getPropertyValue(CHROME_TOKENS[i]));
       if (token) return token;
     }
-
-    /* No palette to read — a signed-out page, a page mid-rewrite, or a
-     * redesign that renamed everything. Then the page's own colour at the very
-     * top, moved one step off itself, which is the same relationship by
-     * arithmetic instead of by name. A step off black lands within a shade of
-     * the grey the tokens give, so the fallback does not look like a fallback. */
-    var page = colourAtTop();
-    return page ? aStepOff(page) : null;
+    return null;
   }
 
   /**
@@ -788,26 +786,6 @@
       channels.push(Math.min(255, Math.max(0, channel)));
     }
     return channels;
-  }
-
-  /**
-   * One step off a colour, away from itself: dark colours lift towards white,
-   * light ones settle towards black.
-   *
-   * Fifteen per cent and four per cent rather than one number for both,
-   * because the eye does not read the two directions the same way. Black
-   * lifted by fifteen per cent is rgb(38, 38, 38) — which is, to the number,
-   * the grey Instagram's own token gives in the dark.
-   */
-  function aStepOff(colour) {
-    var luminance =
-      (0.2126 * colour[0] + 0.7152 * colour[1] + 0.0722 * colour[2]) / 255;
-    var towards = luminance < 0.5 ? 255 : 0;
-    var amount = luminance < 0.5 ? 0.15 : 0.04;
-
-    return colour.map(function (channel) {
-      return Math.round(channel + (towards - channel) * amount);
-    });
   }
 
   /* ── Instagram's header, in the arrangement its own app uses ──────────── */

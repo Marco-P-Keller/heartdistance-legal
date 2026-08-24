@@ -1480,3 +1480,30 @@ The message is refused unless all three channels are numbers inside the range a
 channel has. A band with nothing behind it is the wrong place to find out what
 three broken numbers mean, and a refusal leaves the colour that was already
 there.
+
+## No band behind the clock at all
+
+The grey lasted one build. Asked for plainly, the answer to "what colour should
+the strip behind the clock be" was: the same one as the header, so that there is
+no strip.
+
+The argument for a grey was that a band wants an edge — that the time and the
+battery should stand on something rather than float in the same void the feed
+runs in. Seen on a phone, that argument loses twice over. The system's black
+against Instagram's near-black is already a hard line across the top of every
+screen, which is what was being complained about; a grey replaces it with a
+second line in a lighter colour. Nobody was asking for a shelf.
+
+So the colour is sampled from what Instagram actually draws at the top of the
+page — not the elevated surface it puts on top of itself, and not one step off
+anything. What the app owns and what the page owns are the same colour, and the
+seam is gone. It still follows the phone from light to dark, the app from the
+feed to a story, and Instagram through a redesign, because it is a sample rather
+than a hex typed in here.
+
+A translucent bar is climbed past rather than flattened: half of white over
+near-black is not a colour the app can paint a solid band in, and guessing what
+is behind it is how a band ends up nearly right on one page and wrong on the
+next. A page that has painted nothing says nothing, and the app keeps its own
+colour up rather than being handed a guess. Five checks in the harness, which is
+sixty-eight.
