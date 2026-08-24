@@ -1,0 +1,20 @@
+# Xcode
+build/
+DerivedData/
+*.xcuserstate
+xcuserdata/
+*.xcscmblueprint
+*.xccheckout
+
+# macOS
+.DS_Store
+
+# Left behind by a local `xcodebuild test`, and by the CI workflow.
+build.log
+*.xcresult
+
+# Screenshots taken by CI.
+shots/
+
+# Written by Tools/look-at-icon.py, for looking at rather than keeping.
+Tools/icon-in-place.png
