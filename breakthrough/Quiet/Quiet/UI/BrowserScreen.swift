@@ -122,8 +122,9 @@ struct BrowserScreen: View {
             //
             // What it costs is the one thing Instagram's own app does that this
             // now cannot: run content up behind the status bar. The app draws
-            // that strip instead, in the page's own colour, and has done for
-            // several builds.
+            // that strip instead, and has done for several builds — in the
+            // page's own colour until now, and one step off it from here. See
+            // `clockBand`.
             .frame(
                 width: glass.width > 0 ? glass.width : nil,
                 height: glass.height > 0 ? glass.height - topInset : nil
@@ -142,7 +143,7 @@ struct BrowserScreen: View {
             // if it does not, the header slides underneath and out of sight.
             // Neither is broken.
             VStack(spacing: 0) {
-                Color(uiColor: .systemBackground)
+                Self.clockBand
                     .frame(height: topInset)
                 Spacer(minLength: 0)
             }
@@ -374,6 +375,20 @@ struct BrowserScreen: View {
             }
         }
     }
+
+    /// The colour of the band the clock stands on.
+    ///
+    /// One step off the page rather than the page's own colour. In the dark the
+    /// page is pure black, and a black band on a black page is not a band at
+    /// all: the time, the signal and the battery float in the same void the
+    /// feed runs in, and the top of the screen has no edge. A grey gives them
+    /// something to stand on, and says where the app's own pixels stop and
+    /// Instagram's begin.
+    ///
+    /// `secondarySystemBackground` is the system's own name for exactly that
+    /// one step, so it is a grey in the dark and a grey in the light without a
+    /// second colour being written down here, and it moves when the phone does.
+    private static let clockBand = Color(uiColor: .secondarySystemBackground)
 
     /// The height every bar along the bottom of an iPhone has been since the
     /// first one, and the height of Instagram's.

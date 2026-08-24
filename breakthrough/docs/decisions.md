@@ -1450,3 +1450,14 @@ So CI now checks the drawn gap against the number in the source and fails when
 they disagree, rather than printing it and hoping. The measurement had already
 caught this on its first honest run and been read as a fault in the
 measurement.
+
+## A grey band behind the clock
+
+The strip the time and the battery stand on was drawn in the page's own colour,
+which in the dark is pure black. On a black page that is not a band at all —
+there is nothing to see, and the top of the screen has no edge.
+
+It is one step off the page now: `secondarySystemBackground`, which is the
+system's own name for exactly that step and is a grey in both schemes. So the
+clock stands on something, and the seam between the app's pixels and
+Instagram's is where it actually is.
