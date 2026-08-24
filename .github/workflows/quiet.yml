@@ -155,23 +155,40 @@ jobs:
       # with nothing under it, and its shadow — which is black, and which on a
       # light background is an edge of its own — is invisible.
       #
-      # Never fatal. A measurement that cannot be taken must not hide a real
-      # failure behind it.
+      # And it is checked against what the source says, so it fails rather than
+      # merely reports. It has already earned that once: a container added
+      # between the app and the window was centring the browsing screen and
+      # hanging it twelve and a half points off the bottom of the glass, so
+      # moving the row up by thirteen moved it by half a point. Nothing was
+      # wrong with the row. A number that is only printed is a number nobody
+      # reads until somebody has taken four photographs.
+      #
+      # A measurement that cannot be taken at all is not a failure — a missing
+      # Pillow must not stand in for a broken layout — so only a disagreement
+      # is red.
       - name: Measure the row
         if: always()
-        continue-on-error: true
         timeout-minutes: 6
         run: |
-          set -euo pipefail
-          python3 -m pip install --quiet --disable-pip-version-check pillow \
-            || python3 -m pip install --quiet --break-system-packages pillow
+          set -uo pipefail
+          if ! python3 -m pip install --quiet --disable-pip-version-check pillow \
+            && ! python3 -m pip install --quiet --break-system-packages pillow; then
+            echo "Could not install Pillow, so the row was not measured."
+            exit 0
+          fi
+          set -e
+          # What the source says, read out of the source, so the two can never
+          # drift apart quietly.
+          expected=$(sed -n 's/.*islandLift: CGFloat = \([0-9.]*\).*/\1/p' \
+            Quiet/UI/BrowserScreen.swift)
+          echo "The source says $expected pt."
           xcrun simctl ui booted appearance dark
           xcrun simctl terminate booted com.connexa.quiet >/dev/null 2>&1 || true
           xcrun simctl launch booted com.connexa.quiet -QuietRehearsal island >/dev/null
           sleep 4
           xcrun simctl io booted screenshot --type=png island.png
           xcrun simctl ui booted appearance light
-          python3 Tools/measure-the-row.py island.png
+          python3 Tools/measure-the-row.py island.png --expect "$expected"
 
       # The full log is thousands of lines of module compilation. What anybody
       # actually needs after a red run is the handful of lines naming what
