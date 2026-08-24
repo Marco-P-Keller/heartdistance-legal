@@ -678,6 +678,138 @@
     post({ kind: "where", path: lastPath });
   }
 
+  /* ── The colour the clock stands on ───────────────────────────────────── */
+
+  /**
+   * Instagram's own chrome colour, sent up so the app can paint the band
+   * behind the clock in it.
+   *
+   * The app owns the pixels the time and the battery sit on — the page's
+   * viewport starts underneath them — so something has to decide what colour
+   * they are. It used to be the system's page colour, which in the dark is
+   * pure black on a page that is also pure black: no band, no edge, and a
+   * clock apparently floating in the feed.
+   *
+   * The value is read out of the page rather than written down here, because a
+   * hex typed into an app is a guess about somebody else's design that goes
+   * stale without anyone noticing. Instagram publishes its own palette as
+   * custom properties on the root element, and the one wanted here is the
+   * surface it puts *on top of* the page — the colour of its search fields and
+   * its sheets. That is a grey in the dark and a grey in the light, it is
+   * Instagram's grey rather than an approximation of it, and it changes by
+   * itself when the phone changes scheme or Instagram changes its mind.
+   */
+  var CHROME_TOKENS = [
+    "--ig-elevated-background",
+    "--ig-secondary-background",
+    "--ig-highlight-background",
+  ];
+
+  var lastChrome = null;
+
+  function sayChrome() {
+    var colour = chromeColour();
+    if (!colour) return;
+
+    var key = colour.join(",");
+    if (key === lastChrome) return;
+    lastChrome = key;
+
+    post({
+      kind: "chrome",
+      red: colour[0],
+      green: colour[1],
+      blue: colour[2],
+    });
+  }
+
+  function chromeColour() {
+    var root = window.getComputedStyle(document.documentElement);
+    for (var i = 0; i < CHROME_TOKENS.length; i++) {
+      var token = colourFrom(root.getPropertyValue(CHROME_TOKENS[i]));
+      if (token) return token;
+    }
+
+    /* No palette to read — a signed-out page, a page mid-rewrite, or a
+     * redesign that renamed everything. Then the page's own colour at the very
+     * top, moved one step off itself, which is the same relationship by
+     * arithmetic instead of by name. A step off black lands within a shade of
+     * the grey the tokens give, so the fallback does not look like a fallback. */
+    var page = colourAtTop();
+    return page ? aStepOff(page) : null;
+  }
+
+  /**
+   * Whatever is actually drawn at the top of the page.
+   *
+   * Asked of the page rather than of `body`, because on most of Instagram the
+   * body is transparent and the colour belongs to a container several levels
+   * in. Climbs until something is opaque: a translucent bar would otherwise
+   * hand back a colour that is never drawn anywhere.
+   */
+  function colourAtTop() {
+    var element = document.elementFromPoint(
+      Math.max(1, Math.floor(window.innerWidth / 2)),
+      1
+    );
+    while (element) {
+      var colour = colourFrom(
+        window.getComputedStyle(element).backgroundColor
+      );
+      if (colour) return colour;
+      element = element.parentElement;
+    }
+    return colourFrom(
+      window.getComputedStyle(document.documentElement).backgroundColor
+    );
+  }
+
+  /**
+   * "38, 38, 38", "rgb(38, 38, 38)" and "rgba(38, 38, 38, 1)" all mean the
+   * same thing here. The bare triple is how Instagram writes its custom
+   * properties, so that the page can say `rgba(var(--token), 0.6)`.
+   *
+   * Anything see-through is refused rather than flattened. A colour that is
+   * half transparent over something else is not a colour the app can paint a
+   * solid band in, and guessing what is behind it is how you end up with a
+   * band that is nearly right on one page and wrong on the next.
+   */
+  function colourFrom(value) {
+    if (!value) return null;
+
+    var numbers = String(value).match(/-?[\d.]+/g);
+    if (!numbers || numbers.length < 3) return null;
+    if (numbers.length > 3 && parseFloat(numbers[3]) < 0.95) return null;
+
+    var channels = [];
+    for (var i = 0; i < 3; i++) {
+      var channel = Math.round(parseFloat(numbers[i]));
+      if (!isFinite(channel)) return null;
+      channels.push(Math.min(255, Math.max(0, channel)));
+    }
+    return channels;
+  }
+
+  /**
+   * One step off a colour, away from itself: dark colours lift towards white,
+   * light ones settle towards black.
+   *
+   * Fifteen per cent and four per cent rather than one number for both,
+   * because the eye does not read the two directions the same way. Black
+   * lifted by fifteen per cent is rgb(38, 38, 38) — which is, to the number,
+   * the grey Instagram's own token gives in the dark.
+   */
+  function aStepOff(colour) {
+    var luminance =
+      (0.2126 * colour[0] + 0.7152 * colour[1] + 0.0722 * colour[2]) / 255;
+    var towards = luminance < 0.5 ? 255 : 0;
+    var amount = luminance < 0.5 ? 0.15 : 0.04;
+
+    return colour.map(function (channel) {
+      return Math.round(channel + (towards - channel) * amount);
+    });
+  }
+
   /* ── Instagram's header, in the arrangement its own app uses ──────────── */
 
   /**
@@ -1447,6 +1579,7 @@
       takeUpTheFloor(document.body);
       guardLocation();
       sayWhere();
+      sayChrome();
       whoAmI();
       replaceNav();
       headerComesBack();
@@ -1489,6 +1622,18 @@
   window.addEventListener("popstate", schedule);
 
   watchTheHeader();
+
+  /* A change of scheme rewrites every colour in the page and touches nothing in
+   * the document, so the observer below never hears about it and the band would
+   * keep the colour of the scheme you left. */
+  if (window.matchMedia) {
+    var scheme = window.matchMedia("(prefers-color-scheme: dark)");
+    if (scheme.addEventListener) {
+      scheme.addEventListener("change", schedule);
+    } else if (scheme.addListener) {
+      scheme.addListener(schedule);
+    }
+  }
 
   new MutationObserver(schedule).observe(document.documentElement, {
     childList: true,

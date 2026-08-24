@@ -1451,13 +1451,32 @@ they disagree, rather than printing it and hoping. The measurement had already
 caught this on its first honest run and been read as a fault in the
 measurement.
 
-## A grey band behind the clock
+## A grey band behind the clock, in Instagram's own grey
 
 The strip the time and the battery stand on was drawn in the page's own colour,
 which in the dark is pure black. On a black page that is not a band at all —
 there is nothing to see, and the top of the screen has no edge.
 
-It is one step off the page now: `secondarySystemBackground`, which is the
-system's own name for exactly that step and is a grey in both schemes. So the
-clock stands on something, and the seam between the app's pixels and
-Instagram's is where it actually is.
+It is one step off the page now. Which step was the only real question, and
+there were two ways to answer it: write a hex into the app, or ask the page.
+
+Asking the page won. A hex typed into an app is a guess about somebody else's
+design, and it is wrong the morning after that design changes with nobody here
+noticing — the app would go on painting last year's grey next to this year's
+page. Instagram publishes its palette as custom properties on the root element,
+so the band is painted in the colour the site itself puts on top of itself: its
+search fields, its sheets. It follows the phone from light to dark because the
+page does, and it survives a redesign because it was never a number here.
+
+The fallback is arithmetic rather than a second guess: the colour actually drawn
+at the top of the page, moved fifteen per cent towards white if it is dark and
+four per cent towards black if it is light. Black lifted by fifteen per cent is
+rgb(38, 38, 38), which is the grey the tokens give in the dark to the number —
+so the fallback does not look like a fallback. Behind that, for a page that has
+answered nothing at all, `secondarySystemBackground`: the system's own name for
+one step off the page.
+
+The message is refused unless all three channels are numbers inside the range a
+channel has. A band with nothing behind it is the wrong place to find out what
+three broken numbers mean, and a refusal leaves the colour that was already
+there.

@@ -123,8 +123,8 @@ struct BrowserScreen: View {
             // What it costs is the one thing Instagram's own app does that this
             // now cannot: run content up behind the status bar. The app draws
             // that strip instead, and has done for several builds — in the
-            // page's own colour until now, and one step off it from here. See
-            // `clockBand`.
+            // page's own colour until now, and one step off it from here, in
+            // the grey Instagram itself uses. See `clockBand`.
             .frame(
                 width: glass.width > 0 ? glass.width : nil,
                 height: glass.height > 0 ? glass.height - topInset : nil
@@ -143,7 +143,7 @@ struct BrowserScreen: View {
             // if it does not, the header slides underneath and out of sight.
             // Neither is broken.
             VStack(spacing: 0) {
-                Self.clockBand
+                clockBand
                     .frame(height: topInset)
                 Spacer(minLength: 0)
             }
@@ -164,6 +164,10 @@ struct BrowserScreen: View {
         }
         .ignoresSafeArea()
         .animation(reduceMotion ? nil : .easeOut(duration: 0.35), value: surface.hasLoaded)
+        // The band changing colour: the first answer from a page, and every
+        // change of scheme after it. A fade, because a flat area of the screen
+        // changing colour in one frame reads as a glitch.
+        .animation(reduceMotion ? nil : .easeInOut(duration: 0.2), value: surface.chrome)
         .animation(reduceMotion ? nil : .easeInOut(duration: 0.22), value: session.isPanelShowing)
         .animation(reduceMotion ? nil : .easeInOut(duration: 0.22), value: session.isSearchShowing)
         .animation(reduceMotion ? nil : .easeInOut(duration: 0.25), value: preferences.row)
@@ -385,10 +389,19 @@ struct BrowserScreen: View {
     /// something to stand on, and says where the app's own pixels stop and
     /// Instagram's begin.
     ///
-    /// `secondarySystemBackground` is the system's own name for exactly that
-    /// one step, so it is a grey in the dark and a grey in the light without a
-    /// second colour being written down here, and it moves when the phone does.
-    private static let clockBand = Color(uiColor: .secondarySystemBackground)
+    /// Which grey is Instagram's business, not Quiet's. The page publishes its
+    /// own palette and is asked for it, so the band is the exact colour the
+    /// site puts on top of itself — its search fields, its sheets — and follows
+    /// the phone from light to dark, and Instagram through a redesign, without
+    /// anything here being touched. See `WebSurface.chrome`.
+    private var clockBand: Color { surface.chrome ?? Self.systemBand }
+
+    /// Until the page has answered, and for a page that has nothing to say.
+    /// `secondarySystemBackground` is the system's own name for one step off
+    /// the page, which is the same idea in the system's own palette — close
+    /// enough to Instagram's that the handover is not something you can catch
+    /// happening.
+    private static let systemBand = Color(uiColor: .secondarySystemBackground)
 
     /// The height every bar along the bottom of an iPhone has been since the
     /// first one, and the height of Instagram's.
