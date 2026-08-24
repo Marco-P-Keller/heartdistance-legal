@@ -191,7 +191,8 @@ it on a simulator and photographs it. The current state:
 
 ```
 ** BUILD SUCCEEDED **
-Executed 65 tests, with 0 failures        (rules, clock, ledger, session)
+Executed 87 tests, with 0 failures        (rules, clock, ledger, session,
+                                           preferences, applause, memory)
 Executed 5 tests, with 0 failures         (setup → Instagram → relaunch,
                                            and every screen driven by name)
 ```
