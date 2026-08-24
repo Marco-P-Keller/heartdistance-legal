@@ -509,12 +509,42 @@ struct InstagramWebView: UIViewRepresentable {
             // the system's colour the way the view underneath it does.
             control.tintColor = .secondaryLabel
             control.addTarget(self, action: #selector(pulled), for: .valueChanged)
-            // A page shorter than the screen still has a top to pull past.
-            // Without this the gesture works on the feed and does nothing on a
-            // profile with four posts on it, which is worse than not having it.
-            scrollView.alwaysBounceVertical = true
-            scrollView.refreshControl = control
             pull = control
+            keepPullAlive(scrollView)
+        }
+
+        /// Said again, and again, because WebKit says otherwise.
+        ///
+        /// This is why the first version of this did nothing. Setting the
+        /// control up once, on a view that has not loaded anything yet, is the
+        /// recipe everybody writes down and it is half the job: a page load
+        /// takes the bounce back. WebKit decides for itself whether the scroll
+        /// view may be pulled past its own edges, out of the document it just
+        /// committed, and it does not ask what the app had set before. A
+        /// control attached to a scroll view that cannot be overscrolled is a
+        /// control that is never reached — no spinner, no reload, and nothing
+        /// anywhere saying why.
+        ///
+        /// So it is asserted on every ending a navigation has, and on every
+        /// scroll besides. Instagram's client changes pages without loading
+        /// anything, and a navigation delegate hears nothing at all about those
+        /// — the same reason the row along the bottom is told where it is by
+        /// the page rather than by the app. Two boolean reads per frame is not
+        /// a cost worth a cleverer answer.
+        ///
+        /// Both spellings. `bounces` is the one that has always meant this, and
+        /// since iOS 16 it is `alwaysBounceVertical` that actually decides —
+        /// which also covers a page shorter than the screen, where there would
+        /// otherwise be nothing to pull against on a profile with four posts.
+        func keepPullAlive(_ scrollView: UIScrollView) {
+            // Not on a story or inside a conversation. See `ContentRules`.
+            guard !ContentRules.isImmersive(surface.address) else {
+                if scrollView.refreshControl != nil { scrollView.refreshControl = nil }
+                return
+            }
+            if scrollView.refreshControl !== pull { scrollView.refreshControl = pull }
+            if !scrollView.bounces { scrollView.bounces = true }
+            if !scrollView.alwaysBounceVertical { scrollView.alwaysBounceVertical = true }
         }
 
         @objc private func pulled() {
@@ -534,6 +564,8 @@ struct InstagramWebView: UIViewRepresentable {
         }
 
         private func scrolled(_ scrollView: UIScrollView) {
+            keepPullAlive(scrollView)
+
             let offset = scrollView.contentOffset.y
             let delta = offset - lastOffset
             guard abs(delta) > Self.meaningful else { return }
@@ -664,6 +696,7 @@ struct InstagramWebView: UIViewRepresentable {
         func webView(_ webView: WKWebView, didCommit navigation: WKNavigation!) {
             surface.note(address: webView.url)
             tellThisPage(webView)
+            keepPullAlive(webView.scrollView)
         }
 
         func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
@@ -671,6 +704,7 @@ struct InstagramWebView: UIViewRepresentable {
             surface.markLoaded()
             tellThisPage(webView)
             endPull()
+            keepPullAlive(webView.scrollView)
         }
 
         func webView(

@@ -276,10 +276,7 @@ struct BrowserScreen: View {
     /// those, and a way out that is not on the screen is not a way out.
     private var isImmersive: Bool {
         guard !isShowingQuietPage else { return false }
-        let path = surface.address?.path ?? "/"
-        return path.hasPrefix("/stories/")
-            || path.hasPrefix("/direct/t/")
-            || path.hasPrefix("/direct/new/")
+        return ContentRules.isImmersive(surface.address)
     }
 
     /// The row, along the bottom edge, in the shape Instagram's own is.
