@@ -57,6 +57,29 @@ jobs:
       - name: What it makes of the header
         run: node Tools/read-the-header.js
 
+      # Every sentence in the app, in both languages.
+      #
+      # The failure this catches is not a crash and does not look like one: a
+      # sentence written in Swift, added to the catalogue with no German beside
+      # it, shipping in English inside a German app on a screen nobody who
+      # wrote it ever reads in German. It has happened here before.
+      - name: Both languages
+        run: python3 Tools/read-the-strings.py
+
+      # Formatting, so that nobody has to have an opinion about it in a review.
+      #
+      # `--strict` rather than `--in-place`: a job that quietly rewrote the
+      # source would make the checkout disagree with the branch, and the point
+      # is to be told, not to be tidied up after.
+      - name: Formatting
+        run: |
+          set -euo pipefail
+          if ! command -v swift-format >/dev/null 2>&1; then
+            echo "No swift-format on this runner, so formatting was not checked."
+            exit 0
+          fi
+          swift-format lint --strict --recursive Quiet QuietTests QuietUITests
+
   test:
     name: Build and test
     runs-on: macos-15
