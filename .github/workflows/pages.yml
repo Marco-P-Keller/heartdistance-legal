@@ -1,0 +1,78 @@
+name: Pages
+
+# Publishes the two pages App Store Connect will not accept an app without.
+#
+# They are served from what is in the repository rather than from a copy
+# somebody pasted into a hosting panel, so what a reviewer reads and what this
+# project says are the same sentences. A privacy policy that has drifted from
+# the app it describes is worse than none: it is a wrong answer with a URL.
+#
+# One thing still has to be done by hand, once:
+#
+#     Settings → Pages → Source: GitHub Actions
+#
+# After that, https://<owner>.github.io/<repo>/privacy.html resolves.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'breakthrough/Quiet/site/**'
+      - '.github/workflows/pages.yml'
+  workflow_dispatch:
+
+# The permissions Pages needs, and nothing else.
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# One deployment at a time, and a queued one is not cancelled: publishing is
+# the kind of thing that should finish.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  check:
+    name: Read the pages
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # Small, and it has already earned its place: a support page whose
+      # contact address is still the placeholder is a support page that fails
+      # review, and it fails it a week after anybody last looked at this file.
+      - name: Nothing left to fill in
+        run: |
+          set -euo pipefail
+          cd breakthrough/Quiet/site
+          missing=0
+          for page in privacy.html support.html index.html; do
+            if [ ! -f "$page" ]; then
+              echo "$page is not there"; missing=1
+            fi
+          done
+          if grep -rn "example.invalid\|TODO" . ; then
+            echo
+            echo "The pages still carry a placeholder. App Store Connect will"
+            echo "not accept a support URL without a real address on it."
+            missing=1
+          fi
+          exit "$missing"
+
+  publish:
+    name: Publish
+    needs: check
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: breakthrough/Quiet/site
+      - id: deploy
+        uses: actions/deploy-pages@v4
