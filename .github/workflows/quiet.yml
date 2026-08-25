@@ -19,6 +19,44 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  # The riskiest file in the project, asked about on a page that is not
+  # Instagram's.
+  #
+  # `trim.js` is sixteen hundred lines, it is the layer Instagram can break by
+  # renaming something, and until now nothing anywhere checked it. It also
+  # fails in the worst possible way: an entrance that quietly comes back looks
+  # exactly like an app that is working, and the only witness is somebody
+  # scrolling a real feed.
+  #
+  # Cheap, so it runs first and on Linux. A red line here costs seconds; the
+  # same fact found on a phone costs a build, an upload and an evening.
+  check:
+    name: Check the trim
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: breakthrough/Quiet
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      # The one dependency these tools have, and the only reason for it is that
+      # something has to provide a DOM. Installed rather than assumed, so the
+      # job does not depend on what happens to be checked in.
+      - name: A DOM to ask
+        run: npm install --no-save --no-audit --no-fund jsdom
+
+      - name: What the trim does
+        run: node Tools/read-the-trim.js
+
+      - name: What it makes of the header
+        run: node Tools/read-the-header.js
+
   test:
     name: Build and test
     runs-on: macos-15
