@@ -81,7 +81,7 @@ struct BrowserScreen: View {
         // screen. Everything inside is then positioned against the glass, which
         // is what both the strip and the notices want.
         ZStack(alignment: .top) {
-            Color(uiColor: .systemBackground)
+            Paper.ground
 
             // The page's world: the glass, less the clock — and less the row
             // as well, but only where the row is opaque.
@@ -220,7 +220,7 @@ struct BrowserScreen: View {
     /// A cold launch should look like the app deciding to start, not like a
     /// blank browser.
     private var cover: some View {
-        Color(uiColor: .systemBackground)
+        Paper.ground
             .ignoresSafeArea()
             .transition(.opacity)
             .accessibilityHidden(true)
@@ -395,7 +395,7 @@ struct BrowserScreen: View {
             Color.clear
                 .frame(height: bottomInset)
         }
-        .background(Color(uiColor: .systemBackground))
+        .background(Paper.ground)
     }
 
     /// The other one: a pill, inset from both edges, with the page running
@@ -561,13 +561,13 @@ struct BrowserScreen: View {
     /// is sampled rather than written down here, so it follows the phone from
     /// light to dark, the app from the feed to a story, and Instagram through a
     /// redesign, with nothing here touched. See `WebSurface.chrome`.
-    private var clockBand: Color { surface.chrome ?? Self.systemBand }
+    private var clockBand: Color { surface.chrome ?? Self.groundBand }
 
     /// Until the page has answered, and for a page that has nothing to say.
-    /// The system's own page colour, which is what the cover underneath is
-    /// painted in — so the handover from Quiet's blank to Instagram's page is
-    /// one colour changing, not a band appearing.
-    private static let systemBand = Color(uiColor: .systemBackground)
+    /// The colour the cover underneath is painted in — so the handover from
+    /// Quiet's blank to Instagram's page is one colour changing, not a band
+    /// appearing.
+    private static let groundBand = Paper.ground
 
     /// The height every bar along the bottom of an iPhone has been since the
     /// first one, and the height of Instagram's.

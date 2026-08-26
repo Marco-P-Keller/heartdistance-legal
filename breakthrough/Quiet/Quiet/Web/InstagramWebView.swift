@@ -548,8 +548,8 @@ struct InstagramWebView: UIViewRepresentable {
         webView.uiDelegate = context.coordinator
         webView.allowsBackForwardNavigationGestures = true
         webView.customUserAgent = UserAgent.mobileSafari(systemVersion: UIDevice.current.systemVersion)
-        webView.backgroundColor = .systemBackground
-        webView.scrollView.backgroundColor = .systemBackground
+        webView.backgroundColor = Paper.groundColour
+        webView.scrollView.backgroundColor = Paper.groundColour
 
         // The page is given the whole screen. All of it.
         //

@@ -2289,3 +2289,30 @@ still the whole of it. A wrong answer costs a row that fades for a moment, and
 the first flick of a thumb puts it back.
 
 Five checks, which is ninety-one.
+
+## One dark, and it is the one already on the screen
+
+Quiet's paper is warm off-white by day and was warm near-black by night, and the
+argument for the second was the first: paper is warm, and there is no reason for
+it to stop being warm after dark. That argument holds for a screen that is on
+its own and loses for one standing next to somebody else's page — which is the
+same way the hairline under the clock lost, two hundred lines above this.
+
+Three darks were meeting down one screen. Instagram's is a cool near-black. The
+system's — which is what the ground under the web view, the blank held over it
+before the first page and the bar along the bottom were all painted in — is pure
+black. Quiet's own was brown. Two seams, both visible, neither of them anything
+anybody chose.
+
+So there is one dark now: a shade off black, cool rather than warm, sitting
+where the tone Instagram draws its own chrome in already sits. It is not sampled
+from the page — this colour has to be right for screens that are up before any
+page has loaded and after the day is over — but it is chosen to stand beside
+that tone without a line where the two meet. The band behind the clock goes on
+being sampled, as it has been all along; what changed is only what it falls back
+to and what surrounds it.
+
+Nothing changes by day. Instagram's page is white and the system's is white, so
+the ground stays the system's own and Quiet's paper stays the cream it was. The
+warmth was never what made the app's own screens feel unlike the site — the
+serif and the emptiness are — and in the dark it was only ever a brown seam.
