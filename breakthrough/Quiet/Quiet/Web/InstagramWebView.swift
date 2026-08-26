@@ -576,8 +576,26 @@ struct InstagramWebView: UIViewRepresentable {
         webView.uiDelegate = context.coordinator
         webView.allowsBackForwardNavigationGestures = true
         webView.customUserAgent = UserAgent.mobileSafari(systemVersion: UIDevice.current.systemVersion)
+        // The blank between Quiet's own opening and Instagram's first paint.
+        //
+        // The two lines below were already here and did nothing at all, which
+        // is the whole of the bug: **an opaque WKWebView never shows its own
+        // background colour.** WebKit fills the view with the page's colour,
+        // and a page that has not painted yet has none — so it uses its base,
+        // which under a dark appearance is pure black. Every other surface in
+        // the app is `Paper.ground`, a shade off black, so the launch went
+        // ground, black, Instagram: one colour, a hole, and then a page.
+        //
+        // Asking the view not to be opaque is what makes the colour underneath
+        // real. It costs a composite that WebKit was doing anyway the moment
+        // anything on the page was translucent, and it buys a launch that is
+        // one colour all the way through.
+        webView.isOpaque = false
         webView.backgroundColor = Paper.groundColour
         webView.scrollView.backgroundColor = Paper.groundColour
+        // And the strip above and below the page while it is pulled past its
+        // own ends, which WebKit paints itself and would otherwise paint white.
+        webView.underPageBackgroundColor = Paper.groundColour
 
         // The page is given the whole screen. All of it.
         //

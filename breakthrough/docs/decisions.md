@@ -2316,3 +2316,31 @@ Nothing changes by day. Instagram's page is white and the system's is white, so
 the ground stays the system's own and Quiet's paper stays the cream it was. The
 warmth was never what made the app's own screens feel unlike the site — the
 serif and the emptiness are — and in the dark it was only ever a brown seam.
+
+## The hole in the launch
+
+A photograph of the second between Quiet's opening screen and Instagram's first
+paint: the band behind the clock in the app's own near-black, and everything
+below it pure black.
+
+Two lines had been setting the web view's background colour to that same
+near-black for several builds, and they did nothing at all. **An opaque
+`WKWebView` never shows its own background colour.** WebKit fills the view with
+the page's colour, a page that has not painted yet has none, and the base it
+falls back to under a dark appearance is pure black. So every surface in the app
+was one colour and the largest one on screen was another, for about a second, on
+every cold launch.
+
+`isOpaque = false` is the whole fix, and it is worth naming what it costs:
+a composite, which WebKit was doing anyway the moment anything on the page was
+translucent. What it buys is a launch that is one colour from the opening screen
+through to Instagram — and the step at the end, from Quiet's near-black to
+Instagram's black, is the one the ground colour was chosen for in the first
+place.
+
+`underPageBackgroundColor` goes with it, for the strip WebKit paints itself when
+the page is pulled past its own ends.
+
+The lesson is the one this project keeps meeting: a line that looks like it
+configures something is not evidence that anything is configured. The colour was
+set, written down, and invisible.
