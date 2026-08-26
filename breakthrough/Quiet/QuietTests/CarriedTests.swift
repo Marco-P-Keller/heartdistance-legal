@@ -132,6 +132,16 @@ final class CarriedTests: XCTestCase {
         XCTAssertEqual(Carried.merge(loose, strict).limit.cooldownDays, 30)
     }
 
+    /// A default is not a value. Filling the wait in during a merge looks
+    /// harmless and is not: the record comes back different from the one that
+    /// was sent, so every reconciliation decides something has changed and
+    /// writes again, for ever, over a field nobody touched.
+    func testAWaitNobodyHasSetStaysUnset() {
+        let merged = Carried.merge(copy(version: 3), copy(version: 4))
+        XCTAssertNil(merged.limit.cooldown)
+        XCTAssertEqual(merged.limit.cooldownDays, LimitPolicy.defaultCooldownDays)
+    }
+
     // MARK: - The properties the whole thing rests on
 
     func testTheOrderThePhonesOpenInDoesNotMatter() {

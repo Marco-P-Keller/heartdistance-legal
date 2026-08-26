@@ -123,7 +123,14 @@ struct Carried: Codable, Equatable, Sendable {
         merged.lastIncrease = [newer.lastIncrease, older.lastIncrease]
             .compactMap { $0 }
             .max()
-        merged.cooldown = max(newer.cooldownDays, older.cooldownDays)
+        // Two copies that have never been given a wait keep not having one.
+        // Filling in the default here instead would look harmless and is not:
+        // the record would come back different from the one that was sent, so
+        // every reconciliation would decide something had changed and write
+        // again, for ever, over a field nobody touched.
+        merged.cooldown = newer.cooldown == nil && older.cooldown == nil
+            ? nil
+            : max(newer.cooldownDays, older.cooldownDays)
         return merged
     }
 }

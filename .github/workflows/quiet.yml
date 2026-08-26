@@ -314,7 +314,10 @@ jobs:
             section "Failed tests" "grep -E '^Test Case .* failed' build.log | sort -u | head -40"
             section "Warnings"     "grep -E 'warning:' build.log | $strip | sort -u | head -60"
             grep -E "^Executed [0-9]+ test" build.log | tail -2 || true
-          } >> "$GITHUB_STEP_SUMMARY"
+          # Both places. The summary is where somebody reads it on a phone; the
+          # log is where it can be fetched without downloading a sixty-megabyte
+          # result bundle, which is what a red run cost before this line.
+          } | tee -a "$GITHUB_STEP_SUMMARY"
 
       - name: Keep the log and the result bundle
         if: failure()
