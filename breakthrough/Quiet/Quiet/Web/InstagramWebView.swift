@@ -101,6 +101,14 @@ final class WebSurface {
     /// that the change is not something you can catch happening.
     private(set) var chrome: Color?
 
+    /// Whether Instagram has something modal up.
+    ///
+    /// Read from the page, which is the only place it exists, and used for one
+    /// thing: Quiet's own row steps aside while it is true. Nothing of
+    /// Instagram's is touched to make that happen — see the sheet section in
+    /// `trim.js` for why that distinction is the whole of it.
+    private(set) var isSheetUp = false
+
     /// False until the first page has finished, or failed. While it is false the
     /// browsing screen keeps Quiet's own paper over the top, so a cold launch
     /// shows a considered blank rather than the white rectangle of a web view
@@ -116,13 +124,15 @@ final class WebSurface {
     /// What the pull at the top of the feed does, and the only way back from a
     /// page that failed to arrive — a web view that could not load has an
     /// address but nothing on it, and `reload` is the request that fixes both.
-    /// Falls back to the home address for the one case where there is nothing
-    /// to reload, which is a cold view nobody has navigated yet.
+    /// Falls back to the first opening address for the one case where there is
+    /// nothing to reload, which is a cold view nobody has navigated yet. The
+    /// first rather than the one that failed: this is somebody asking to start
+    /// over, and the walk down `ContentRules.openings` starts again with it.
     func reload() {
         guard let webView else { return }
         note(stumble: nil)
         if webView.url == nil {
-            webView.load(URLRequest(url: ContentRules.home))
+            webView.load(URLRequest(url: ContentRules.openings[0]))
         } else {
             webView.reload()
         }
@@ -357,6 +367,11 @@ final class WebSurface {
         // carrying Instagram's black into a light appearance.
         icons[entry] = image.withRenderingMode(.alwaysTemplate)
         Remembered.remember(icon: entry, data: data)
+    }
+
+    fileprivate func note(sheet up: Bool) {
+        guard isSheetUp != up else { return }
+        isSheetUp = up
     }
 
     fileprivate func note(chrome colour: Color) {
@@ -899,16 +914,36 @@ struct InstagramWebView: UIViewRepresentable {
             withError error: Error
         ) {
             endPull()
-            let code = (error as NSError).code
+            let failure = error as NSError
+            let code = failure.code
             guard code != NSURLErrorCancelled else { return }
             surface.markLoaded()
 
             let offline = Self.offlineCodes.contains(code)
-            if webView.url == nil {
-                surface.note(stumble: offline ? .offline : .unreachable)
-            } else if offline {
-                session.show(String(localized: "No connection."))
+            guard webView.url == nil else {
+                if offline { session.show(String(localized: "No connection.")) }
+                return
             }
+
+            // Nothing on screen, and the network is there. That is the one
+            // failure where a second address is worth trying: the app opens on
+            // a path Instagram chose and Instagram can retire, and a retired
+            // path would otherwise leave every launch on a **Try again** button
+            // asking for the same dead address for ever.
+            //
+            // Not when offline. A phone with no network fails at the second
+            // address exactly as it failed at the first, and all the attempt
+            // buys is a slower way to say the true thing.
+            //
+            // The address that failed comes out of the error rather than off
+            // the view, which by now is holding nothing.
+            let failed = failure.userInfo[NSURLErrorFailingURLErrorKey] as? URL
+            if !offline, let next = ContentRules.opening(after: failed) {
+                surface.open(next)
+                return
+            }
+
+            surface.note(stumble: offline ? .offline : .unreachable)
         }
 
         /// The codes that mean "there is no network", as against the ones that
@@ -974,6 +1009,11 @@ struct InstagramWebView: UIViewRepresentable {
                 if let reading = Health(message: body) {
                     surface.note(health: reading)
                 }
+
+            case "sheet":
+                // Something modal is covering the foot of the glass. The row
+                // steps aside until it goes; see `quietBar` in BrowserScreen.
+                surface.note(sheet: body["up"] as? Bool ?? false)
 
             case "me":
                 // Read out of Instagram's navigation before it was taken out.
