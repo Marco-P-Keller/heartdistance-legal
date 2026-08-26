@@ -201,6 +201,16 @@
         }
       }
     },
+    "A time for Instagram": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Eine Zeit für Instagram"
+          }
+        }
+      }
+    },
     "Ask for %@ a day": {
       "localizations": {
         "de": {
@@ -537,6 +547,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Benachrichtigungen"
+          }
+        }
+      }
+    },
+    "One reminder a day, at an hour you choose — and none at all on a day you have already been. It cannot say whether anything happened on Instagram; nothing outside Instagram's own app can. What it can do is give the checking an hour, so the rest of the day does not need one.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Eine Erinnerung am Tag, zu einer Uhrzeit, die du wählst — und keine an einem Tag, an dem du schon da warst. Ob auf Instagram etwas passiert ist, kann sie nicht sagen; das kann nichts ausserhalb von Instagrams eigener App. Was sie kann: dem Nachschauen eine Uhrzeit geben, damit der Rest des Tages keine braucht."
           }
         }
       }
@@ -911,6 +931,16 @@
         }
       }
     },
+    "The hour Quiet reminds you": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Die Uhrzeit, zu der Quiet dich erinnert"
+          }
+        }
+      }
+    },
     "The page did not arrive. That is usually a moment rather than a problem.": {
       "localizations": {
         "de": {
@@ -957,6 +987,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Das ist dein Limit."
+          }
+        }
+      }
+    },
+    "This phone has notifications turned off for Quiet, so the reminder has nowhere to arrive. It can be switched on again in Settings.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dieses Telefon hat Mitteilungen für Quiet ausgeschaltet, die Erinnerung hätte also nirgendwo anzukommen. In den Einstellungen lässt sie sich wieder einschalten."
           }
         }
       }
@@ -1087,6 +1127,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Du meldest dich auf Instagrams eigener Seite an. Dein Passwort berührt Quiet nie."
+          }
+        }
+      }
+    },
+    "Your Instagram window is open.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dein Instagram-Fenster ist offen."
           }
         }
       }

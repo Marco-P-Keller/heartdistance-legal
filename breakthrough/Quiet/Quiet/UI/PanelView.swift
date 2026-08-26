@@ -19,6 +19,9 @@ struct PanelView: View {
     /// Cleared by the next tap, so it answers the thing that was just pressed
     /// rather than sitting there.
     @State private var waitRefused: String?
+    /// Set when the phone declines notifications, so the switch can say why it
+    /// slid back rather than just sliding back.
+    @State private var appointmentRefused = false
     @State private var isConfirmingForget = false
     @State private var hasCleared = false
 
@@ -33,6 +36,8 @@ struct PanelView: View {
                     findSomeone
                     Divider().overlay(Paper.rule).padding(.vertical, 24)
                     warnings
+                    Divider().overlay(Paper.rule).padding(.vertical, 24)
+                    appointment
                     Divider().overlay(Paper.rule).padding(.vertical, 24)
                     rowShape
                     Divider().overlay(Paper.rule).padding(.vertical, 24)
@@ -270,6 +275,82 @@ struct PanelView: View {
 
             Note("Two quiet notices, at five minutes and at one. Turning them off does not add any time — the day ends at the same moment either way.")
         }
+    }
+
+    // MARK: - A time for Instagram
+
+    /// The one thing Quiet does that a notification usually does, and the one
+    /// it cannot.
+    ///
+    /// It cannot tell you that a message arrived. Nothing outside Instagram's
+    /// own app can — that would take something, somewhere else, logged in as
+    /// you, and this app is built around never being that. What it can do is
+    /// take the *reason* to keep checking away: the window has an hour, and
+    /// the hour finds you rather than the other way round.
+    ///
+    /// And it is silent on a day you have already been. A reminder that the
+    /// window is open is useful; the same reminder after you have been through
+    /// it is an invitation to a second visit, which is the opposite of the
+    /// point.
+    private var appointment: some View {
+        VStack(alignment: .leading, spacing: 14) {
+            Toggle(isOn: Binding(
+                get: { session.appointment.isOn },
+                set: { wanted in
+                    appointmentRefused = false
+                    guard wanted else {
+                        session.turnOffAppointment()
+                        return
+                    }
+                    Task {
+                        let granted = await session.turnOnAppointment()
+                        appointmentRefused = !granted
+                    }
+                }
+            )) {
+                Text("A time for Instagram")
+                    .font(.quietBody)
+            }
+            .tint(Paper.ink)
+
+            if session.appointment.isOn {
+                DatePicker(
+                    "",
+                    selection: appointmentHour,
+                    displayedComponents: .hourAndMinute
+                )
+                .labelsHidden()
+                .accessibilityLabel(Text("The hour Quiet reminds you"))
+            }
+
+            if appointmentRefused {
+                Note("This phone has notifications turned off for Quiet, so the reminder has nowhere to arrive. It can be switched on again in Settings.")
+            } else {
+                Note("One reminder a day, at an hour you choose — and none at all on a day you have already been. It cannot say whether anything happened on Instagram; nothing outside Instagram's own app can. What it can do is give the checking an hour, so the rest of the day does not need one.")
+            }
+        }
+    }
+
+    /// The hour as a `Date`, because that is what a time picker speaks. Only
+    /// the hour and the minute survive the round trip; the day it happens to be
+    /// attached to is thrown away on the way back in.
+    private var appointmentHour: Binding<Date> {
+        Binding(
+            get: {
+                let calendar = Calendar.current
+                return calendar.date(
+                    bySettingHour: session.appointment.hour,
+                    minute: session.appointment.minute,
+                    second: 0,
+                    of: calendar.startOfDay(for: Date()),
+                    matchingPolicy: .nextTime
+                ) ?? Date()
+            },
+            set: { chosen in
+                let parts = Calendar.current.dateComponents([.hour, .minute], from: chosen)
+                session.moveAppointment(to: (parts.hour ?? 0) * 60 + (parts.minute ?? 0))
+            }
+        )
     }
 
     // MARK: - The row along the bottom

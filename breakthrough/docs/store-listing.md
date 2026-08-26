@@ -56,10 +56,12 @@ you make calmly is allowed to bind the decision you make at eleven at night.
 WHAT QUIET DOES NOT DO
 
 • No account, no servers, no analytics, no advertising, no tracking.
-• No notifications, no streaks, no weekly report, nothing to check.
+• No streaks, no weekly report, nothing to check. One notification exists and
+  it is off until you ask for it: a single daily reminder, at an hour you pick,
+  which stays quiet on any day you have already been.
 • No countdown on the screen. A timer you can watch is a timer you do watch;
   what is left is in the panel, for the moments you actually want to know.
-• No permission prompts at all.
+• No permission prompt unless you ask for the daily reminder.
 
 Four things are kept, on your phone, in the keychain: your limit, today's total,
 the furthest point in time the app has seen, and the day you set it up. They

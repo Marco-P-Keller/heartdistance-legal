@@ -2082,3 +2082,59 @@ and this is not that argument.
 What it buys, for a certain kind of reader, is not being told that five minutes
 remain, since that sentence is precisely the thing that starts a last five
 minutes.
+
+## A time for Instagram, since there can be no message from it
+
+The gap that was written down as unfixable: with no notifications, "has anything
+happened?" is a question that can only be answered by opening the app. So it
+gets opened, briefly, several times a day — which is the habit the limit was
+bought to break, arriving through the one door the limit does not watch.
+
+The obvious answer is not available, and it is worth being exact about why,
+because three plausible technologies were considered and all three land in the
+same place. A notification saying a message arrived can only come from something
+that *knows* a message arrived. That is Instagram, and Instagram pushes to its
+own app; there is no webhook and no API for a personal account. CloudKit and
+Firebase are delivery, not knowledge — they carry a message somebody else wrote.
+For either to have anything to write, something outside your phone would have to
+be logged in as you and looking. That is the single thing this app is built
+never to be: today the password passes through no code in this repository at
+all, and it would stop being true the moment a server held a session. It would
+also stop working — a login from a data centre is what an account takeover looks
+like to Instagram, and the result is a checkpoint, not a notification.
+
+So the feature is not built, and something else is built in the space it leaves.
+
+**An appointment.** One reminder a day, at an hour you choose, saying only that
+the window is open. It cannot tell you whether anything happened. What it does
+is take away the reason to keep finding out: the checking has an hour, so the
+rest of the day does not need one.
+
+**And it is silent on a day you have already been.** This is the half that makes
+it worth building rather than a reminder like any other. A reminder that the
+window is open is useful; the same reminder after you have been through it is an
+invitation to a second visit, which is exactly the behaviour being replaced. The
+ledger already knows — it is the app's answer to how much of today has been
+spent — so the rule reads off the record that exists rather than keeping a
+second one.
+
+Mechanically that rules out the obvious implementation. A repeating trigger
+fires every day at six whatever else is true, and cannot be told the second half
+of the rule. So a week of individual reminders is put on the phone at a time,
+each one dated, and the whole week is recomputed from scratch on every launch
+and every time the app goes to the background. iOS holds them itself, which is
+why this needs no server and no background execution — and a week is also the
+right amount for an app you have stopped opening to say before it stops talking.
+
+Two things it costs, both named where they were claimed.
+
+The app said it had no permission prompts at all, and now it has one. It is
+asked at the moment somebody switches the reminder on — never at launch, which
+is a toll gate in front of an app nobody has decided to use yet — and if the
+phone says no, the switch goes back and says why. A switch that slides across
+while nothing was granted promises a reminder that will never arrive, which is
+worse than not offering one.
+
+And it makes Quiet speak first, which nothing in it did before. That is why it
+is off until asked for, why it is one line with no badge and no count, and why
+the one thing it will never say is what you missed.

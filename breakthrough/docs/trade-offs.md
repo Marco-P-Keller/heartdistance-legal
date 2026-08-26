@@ -12,12 +12,18 @@ It does not get you:
 * **Speed.** Pages load a beat slower than the native app, always.
 * **Anything Instagram ships only in its own client**, which changes without
   notice and always will.
-* **Push notifications.** Quiet does not send any, and the web client cannot.
-  This is worth naming as the cost it is rather than only as a decision: with no
-  notifications, "have I got a message" is a question that can only be answered
-  by opening the app, which is a reason to open it more often, not less. A daily
-  summary would be the answer and it needs a server, which is a different
-  project.
+* **Push notifications.** Quiet cannot tell you that a message arrived, and no
+  amount of engineering changes that: only Instagram knows, and Instagram pushes
+  to its own app. Anything else — a server, CloudKit, Firebase, all of them land
+  in the same place — means something somewhere else logged in as you, which is
+  the one thing this app is built never to be.
+  This is worth naming as the cost it is: with no notifications, "have I got a
+  message" is a question that can only be answered by opening the app, which is
+  a reason to open it more often, not less.
+  What exists instead is an appointment, and it answers a different question. A
+  single reminder a day, at an hour you choose, saying only that the window is
+  open — and none at all on a day you have already been. It cannot tell you
+  whether anything happened. It can take away the reason to keep finding out.
 
 ## Because of what Quiet removes on purpose
 

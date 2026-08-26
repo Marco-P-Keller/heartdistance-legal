@@ -69,6 +69,9 @@ final class QuietSession {
     private let heartbeat: any Heartbeat
     private let uptime: () -> TimeInterval
 
+    /// What puts the daily reminder on the phone. See `Appointment`.
+    private let ringer: any Ringer
+
     private var isForeground = false
     private var isBeating = false
     private var lastSample: TimeInterval?
@@ -102,7 +105,8 @@ final class QuietSession {
         preferences: Preferences? = nil,
         calendar: Calendar = .current,
         heartbeat: (any Heartbeat)? = nil,
-        uptime: @escaping () -> TimeInterval = { ProcessInfo.processInfo.systemUptime }
+        uptime: @escaping () -> TimeInterval = { ProcessInfo.processInfo.systemUptime },
+        ringer: (any Ringer)? = nil
     ) {
         self.store = store
         self.clock = clock
@@ -110,6 +114,7 @@ final class QuietSession {
         self.calendar = calendar
         self.heartbeat = heartbeat ?? RunLoopHeartbeat()
         self.uptime = uptime
+        self.ringer = ringer ?? SystemRinger()
         ledger = UsageLedger(day: DayKey(clock.now, calendar: calendar))
     }
 
@@ -137,6 +142,7 @@ final class QuietSession {
         rollIfNeeded()
         evaluateScreen()
         syncCounting()
+        mindTheAppointment()
     }
 
     /// Finish first run with the chosen limit. This one applies immediately: the
@@ -164,6 +170,9 @@ final class QuietSession {
             checkpoint()
         }
         syncCounting()
+        // After the checkpoint, so that a day which has just been spent is
+        // spent as far as the reminder is concerned too.
+        mindTheAppointment()
     }
 
     // MARK: - The day
@@ -331,6 +340,73 @@ final class QuietSession {
         announced.removeAll()
         notice = nil
         screen = .setup
+        preferences.appointment.isOn = false
+        ringer.silence()
+    }
+
+    // MARK: - The appointment
+
+    /// The daily reminder, as it stands.
+    var appointment: Appointment { preferences.appointment }
+
+    /// Switch the reminder on, at the hour already chosen.
+    ///
+    /// Asks the phone first, and stays off if the phone says no. A switch that
+    /// slides across while nothing was actually granted is worse than no switch
+    /// at all: it promises a reminder that will never arrive, which is exactly
+    /// the failure this feature exists to avoid.
+    @discardableResult
+    func turnOnAppointment() async -> Bool {
+        guard await ringer.ask() else { return false }
+        preferences.appointment.isOn = true
+        mindTheAppointment()
+        return true
+    }
+
+    func turnOffAppointment() {
+        preferences.appointment.isOn = false
+        mindTheAppointment()
+    }
+
+    /// Move it to another hour. Free, in both directions, at any time.
+    ///
+    /// Nothing about when a reminder rings changes how much time there is, so
+    /// none of the waiting rules apply. This is the one setting in Quiet that
+    /// is purely about the shape of your day rather than about the promise.
+    func moveAppointment(to minutesAfterMidnight: Int) {
+        let wrapped = ((minutesAfterMidnight % 1440) + 1440) % 1440
+        guard wrapped != preferences.appointment.minutesAfterMidnight else { return }
+        preferences.appointment.minutesAfterMidnight = wrapped
+        mindTheAppointment()
+    }
+
+    /// Whether Instagram has been on screen today.
+    ///
+    /// Read off the ledger rather than kept separately, because the ledger is
+    /// already the app's answer to "how much of today has been spent" and a
+    /// second record of the same fact is a second fact. A day whose ledger has
+    /// rolled has nothing spent in it yet, which is the honest answer at four
+    /// in the morning.
+    private var hasOpenedToday: Bool {
+        ledger.day == today && ledger.seconds > 0
+    }
+
+    /// Put the coming week's reminders on the phone, or take them off.
+    ///
+    /// Recomputed from scratch every time rather than adjusted, so there is one
+    /// answer to what is pending and it is this function's. Nothing before
+    /// setup and nothing after being forgotten: an app that has never been used
+    /// has no window to remind anybody about.
+    private func mindTheAppointment() {
+        guard hasSomethingToRemember else {
+            ringer.silence()
+            return
+        }
+        ringer.ring(at: preferences.appointment.rings(
+            after: clock.now,
+            openedToday: hasOpenedToday,
+            calendar: calendar
+        ))
     }
 
     // MARK: - Notices

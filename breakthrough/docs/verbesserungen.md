@@ -70,7 +70,7 @@ soll.
 | 19 | Skripte laufen in Instagrams eigener JS-Welt | ⬜ | Abwägung offen — siehe unten |
 | 20 | Keine App-Intents / Shortcuts | ⬜ | in den Trade-offs benannt |
 | 21 | Kein Widget | 👤 | Neues Target, App Group, Keychain-Sharing |
-| 22 | Keine Benachrichtigungen → man öffnet öfter „nur kurz" | ⏸ | Ohne Server und im Web-Client nicht möglich |
+| 22 | Keine Benachrichtigungen → man öffnet öfter „nur kurz" | ✅ | `Core/Appointment.swift`, `Platform/Appointments.swift`, Panel — als Termin, nicht als Meldung |
 | 23 | Kein eigener Offline-Zustand | ✅ | `UI/StumbleView.swift` |
 | 24 | Website-Daten wachsen unbegrenzt | ✅ | `Web/InstagramWebView.swift`, Panel |
 | 25 | iPad/Landscape nirgends dokumentiert | ✅ | `docs/trade-offs.md` |
@@ -163,7 +163,7 @@ Nicht Teil der 38, aber beim Bauen aufgefallen:
 | 19 | Skripte in isolierter JS-Welt | Echte Abwägung, siehe oben — nicht blind zu entscheiden |
 | 20 | App-Intents / Shortcuts | Möglich, nicht gebaut |
 | 21 | Widget | Neues Target, App Group, Keychain-Sharing |
-| 22 | Benachrichtigungen | Ohne Server unmöglich |
+| 22 | Benachrichtigungen über Instagram | Weiss nur Instagram; ersetzt durch den täglichen Termin |
 | 26 | Bold Text / Kontrast | Braucht ein Auge auf einem echten Gerät |
 | 27 | Restzeit im VoiceOver-Rotor | Machbar, nicht gebaut |
 | 28 | Weitere Sprachen | Ein Mensch pro Sprache, kein Skript |
