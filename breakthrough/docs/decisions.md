@@ -2138,3 +2138,71 @@ worse than not offering one.
 And it makes Quiet speak first, which nothing in it did before. That is why it
 is off until asked for, why it is one line with no badge and no count, and why
 the one thing it will never say is what you missed.
+
+## A second device is not a second allowance
+
+The rule the app exists to hold is a number of minutes a day. Two phones with a
+thirty-minute limit are an hour, and an iPad is the way around the whole thing
+that needs no cleverness at all. It had been written down as needing a server,
+and it does not.
+
+**Where it lives.** iCloud's key-value store, not CloudKit's database, and the
+difference is operational rather than technical. A `CKRecord` needs a container
+and a schema, and a schema has to be pushed from development to production by
+hand, in a console, in a desktop browser, before a TestFlight build can write a
+single field. Until somebody does that the feature is silently dead on every
+phone that has it, and there is no way to tell from the phone. The key-value
+store needs an entitlement and nothing else — no container to choose, no record
+type, no deployment step, and no way to be half set up. What it costs is size:
+a megabyte in total, against the few hundred bytes this writes.
+
+**What crosses.** The limit, any queued increase, the day the last increase was
+asked for, the wait in force, and how much each device has spent today. Not the
+day setup happened, not the request to be forgotten, not a single thing about
+what was looked at.
+
+**The merge is the feature.** Sync is the one thing in this app that can hand
+somebody more time than they agreed to, and do it silently, so what happens when
+two copies disagree is a written rule with tests rather than "the newest wins".
+It carries the same asymmetry as the rest of the app — *less time never waits,
+more time does*:
+
+* **What is spent** is kept per device and summed, never totalled and merged.
+  Two phones that each spend ten minutes have spent twenty, so a single total
+  could only be reconciled by adding — and addition is not idempotent, so the
+  second sync would spend it twice. Each device writes only its own figure, the
+  merge takes the larger of each, and the day is the sum. Merge it as often as
+  you like; the answer does not move.
+* **The limit** follows whichever copy was written last, counted by a version
+  rather than by a clock — the app already refuses to trust this phone's clock
+  about anything that matters. Where neither is later, because both wrote
+  without seeing the other, the smaller number wins.
+* **A queued increase** takes the smaller of two, and a cancellation wins
+  outright. Cancelling is asking for less.
+* **The day of the last increase** takes the later of the two. This is the one
+  that closes the obvious door: without it a stale copy resets the weekly clock
+  and a second increase can be had in the same week by opening the other phone.
+* **The wait** takes the longer of the two, for exactly the reason the app gives
+  when it is changed by hand.
+
+The door that stays open, named rather than hidden: two devices, both offline,
+both queuing an increase in the same week. They collapse to the smaller of the
+two, so it buys nothing over asking once — but it is a real gap, and closing it
+properly needs something that can refuse, which is a server.
+
+**It is off until asked for**, like the reminder, and for the same reason: a
+thing that leaves the phone should be a thing somebody switched on. Switching it
+off takes the copy down again, and being forgotten takes it down too — a record
+left in iCloud would be seeded straight back by the next device to open, which
+would turn a promise into a delay.
+
+**Nothing waits for it.** No account, no signal, iCloud having a bad afternoon:
+all of them come back as "nothing up there", and the app behaves exactly as it
+did before this existed. A limit that stops working when the network does is not
+a limit.
+
+One consequence worth stating for the listing. Apple's guidance is that data in
+a reader's own private iCloud, which the developer cannot read and never
+receives, is not data the developer collects — the same category as a document
+in their iCloud Drive. "Data Not Collected" still holds, and the About screen
+says in as many words what goes up and what does not.

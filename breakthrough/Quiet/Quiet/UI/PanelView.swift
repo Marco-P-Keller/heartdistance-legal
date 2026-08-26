@@ -39,6 +39,8 @@ struct PanelView: View {
                     Divider().overlay(Paper.rule).padding(.vertical, 24)
                     appointment
                     Divider().overlay(Paper.rule).padding(.vertical, 24)
+                    otherDevices
+                    Divider().overlay(Paper.rule).padding(.vertical, 24)
                     rowShape
                     Divider().overlay(Paper.rule).padding(.vertical, 24)
                     about
@@ -353,6 +355,35 @@ struct PanelView: View {
         )
     }
 
+    // MARK: - Your other devices
+
+    /// The only thing in Quiet that sends anything anywhere.
+    ///
+    /// Two phones with a thirty-minute limit are an hour, and that is not a
+    /// detail — it is the whole rule, walked around by owning an iPad. So the
+    /// limit, the wait and today's total can follow you, through your own
+    /// iCloud, where nobody else can read them.
+    ///
+    /// Off until asked for, because a thing that leaves the phone should be a
+    /// thing somebody switched on. And what happens when two devices disagree
+    /// is not left to whichever spoke last: the rules are written down in one
+    /// place, with the same asymmetry as everything else here. Less time never
+    /// waits; more time does.
+    private var otherDevices: some View {
+        VStack(alignment: .leading, spacing: 14) {
+            Toggle(isOn: Binding(
+                get: { session.carriesBetweenDevices },
+                set: { session.carryBetweenDevices($0) }
+            )) {
+                Text("Carry this between your devices")
+                    .font(.quietBody)
+            }
+            .tint(Paper.ink)
+
+            Note("Your limit, your wait and today's total, kept in your own iCloud so a second device is not a second allowance. Nothing else is sent, and nobody but you can read it — not even us, because there is no us: Quiet has no server and no account. Switching this off takes the copy down again.")
+        }
+    }
+
     // MARK: - The row along the bottom
 
     /// The one thing in Quiet that is purely a matter of taste.
@@ -439,7 +470,8 @@ struct PanelView: View {
             }
 
             VStack(alignment: .leading, spacing: 8) {
-                Note("Quiet has no account, no servers and no analytics. It stores five things on this phone: your limit, today's total, the last time it saw, the day you set it up, and whether you have asked it to forget.")
+                Note("Quiet has no account, no server of its own and no analytics. It stores six things on this phone: your limit, today's total, the last time it saw, the day you set it up, whether you have asked it to forget, and what your other devices have spent today.")
+                Note("If you carry it between your devices, three of those go into your own iCloud — the limit, the wait, and how much each device has spent today. Nothing else, nowhere else, and only while the switch above is on.")
                 Note("Your limit is kept in the keychain, which outlives the app. Deleting Quiet and installing it again does not reset it.")
                 Note("Quiet is not affiliated with or endorsed by Instagram or Meta.")
                 Note(verbatim: Build.versionLine)

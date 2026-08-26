@@ -7,6 +7,10 @@ import XCTest
 @MainActor
 final class AppointmentWiringTests: XCTestCase {
     /// Stands in for the phone's notification centre.
+    ///
+    /// Isolated explicitly: a type nested inside a main-actor class does not
+    /// inherit that isolation, and `Ringer` is a main-actor protocol.
+    @MainActor
     private final class SpyRinger: Ringer {
         var grants = true
         var asked = 0

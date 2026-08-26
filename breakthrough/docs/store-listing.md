@@ -55,7 +55,9 @@ you make calmly is allowed to bind the decision you make at eleven at night.
 
 WHAT QUIET DOES NOT DO
 
-• No account, no servers, no analytics, no advertising, no tracking.
+• No account, no server of ours, no analytics, no advertising, no tracking.
+  If you switch on carrying between devices, your limit and today's total go
+  into your own iCloud — where only your devices can read them.
 • No streaks, no weekly report, nothing to check. One notification exists and
   it is off until you ask for it: a single daily reminder, at an hour you pick,
   which stays quiet on any day you have already been.
@@ -129,6 +131,13 @@ That is not a convenient reading. Quiet has no networking of its own, no
 identifiers, no SDKs and no server to send anything to. The Instagram session
 lives in the app's web storage exactly as it would in Safari, which is Meta's
 collection, disclosed by Meta, in Meta's own listing.
+
+The optional iCloud sync does not change the answer. Apple's own guidance is
+that data stored in a user's private CloudKit or key-value store — which the
+developer cannot read and never receives — is not data the developer collects.
+It is the same category as a document in the user's iCloud Drive. Nothing there
+is linked to an identity, because there is no identity: a limit, a wait, and a
+handful of running totals under an anonymous per-device name.
 
 ## Export compliance
 

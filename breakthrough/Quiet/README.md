@@ -3,7 +3,8 @@
 Instagram, minus the parts that were built to keep you there — and a daily limit
 that cannot be lifted in the moment it starts to bite.
 
-An iPhone app. SwiftUI, iOS 17, no third-party dependencies, no servers, no
+An iPhone app. SwiftUI, iOS 17, no third-party dependencies, no server of its
+own, no
 account, no analytics, and one permission prompt, which never appears unless
 you go and ask for it.
 
