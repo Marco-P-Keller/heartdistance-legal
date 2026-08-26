@@ -970,6 +970,78 @@
     return channels;
   }
 
+  /* ── Whether there is anything on the page at all ─────────────────────── */
+
+  /**
+   * Whether Instagram has drawn anything yet, sent up so the app can keep its
+   * own cover over a page that has nothing on it.
+   *
+   * The app used to lift the cover the moment the navigation settled, and a
+   * navigation settling is not the same event as a page appearing. Instagram
+   * is a shell: the request finishes, the app says loaded, and what is on the
+   * glass for the next second or two is Instagram's own black rectangle with
+   * nothing in it. A photograph of that is the reason this exists — a black
+   * void under a grey band, which reads as a broken app rather than a loading
+   * one.
+   *
+   * **Said once, and only on the way up.** Instagram empties its own main
+   * element on every client-side move between pages, and a cover that answered
+   * that would flash over the screen every time somebody opened a profile. So
+   * this reports while the page has never shown anything, and goes quiet for
+   * good the first time it has. The cover is a cold-start thing; after that the
+   * page is the page, empty or not.
+   */
+
+  /** Things that put ink on a screen. One of them, drawn, is a page. */
+  var INK = "img, svg, video, canvas, input, textarea, button, h1, h2, p";
+
+  /** Past which there is plainly something there, without measuring it. */
+  var PLENTY = 24;
+
+  var everPainted = false;
+  var lastBare = null;
+
+  function sayBare() {
+    if (everPainted) return;
+
+    var bare = pageIsBare();
+    if (!bare) everPainted = true;
+    if (bare === lastBare) return;
+    lastBare = bare;
+
+    post({ kind: "bare", on: bare });
+  }
+
+  /**
+   * Nothing drawn anywhere in the document.
+   *
+   * Two things are asked of each candidate, and both are about the same
+   * mistake. What Quiet takes off the page is hidden rather than removed, so
+   * Instagram's own navigation row is still in the document with its five
+   * glyphs in it on a page that has painted nothing else — and a count would
+   * call that a page. So anything Quiet has marked is skipped by name, and
+   * everything else is measured: an element with no box is an element nobody
+   * can see, whoever hid it and however.
+   */
+  function pageIsBare() {
+    var body = document.body;
+    if (!body) return true;
+
+    var candidates = body.querySelectorAll(INK);
+    // A page with this much in it has something in it. The walk below is for
+    // the handful of elements a shell holds while it waits for its first
+    // screen, not for a feed.
+    if (candidates.length > PLENTY) return false;
+
+    for (var i = 0; i < candidates.length; i++) {
+      var element = candidates[i];
+      if (element.closest("[data-quiet-hidden]")) continue;
+      var box = element.getBoundingClientRect();
+      if (box.width > 0 && box.height > 0) return false;
+    }
+    return true;
+  }
+
   /* ── Instagram's header, in the arrangement its own app uses ──────────── */
 
   /**
@@ -2096,6 +2168,10 @@
       // to say, both indistinguishable from a sheet right up until the calls
       // above mark them.
       saySheet();
+      // And last of all, whether any of that found anything: the answer has to
+      // be read after the calls above have hidden what they hide, or
+      // Instagram's own navigation row counts as a page.
+      sayBare();
       settle();
     });
   }
