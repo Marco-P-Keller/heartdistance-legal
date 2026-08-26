@@ -857,6 +857,63 @@ const GROUPED = `
   );
   check("what Quiet has already taken out is not a sheet", sheetOf(ownRow), undefined);
 
+  /* And the fourth question, asked in the middle of the glass rather than at
+   * the foot of it: is the page still the thing on the screen?
+   *
+   * The switcher can slip the other three — it says nothing about being modal,
+   * its panel sits where Instagram chooses to put it, and whether the page
+   * behind it is pinned is Instagram's business. What no sheet on the mobile
+   * web skips is the dimmed sheet of nothing behind it, because that is what a
+   * tap outside lands on. */
+  const scrim = await page(
+    `<main><article>a post</article></main>
+     <div data-name="scrim" data-at-top style="position: fixed" data-box="0,0,390,844">
+       <div data-name="panel" data-box="0,540,390,304">${PANEL}</div>
+     </div>`,
+    FEED
+  );
+  check("something drawn over the whole page is a sheet", sheetOf(scrim)?.up, true);
+  check("and nothing of it is marked or moved either", marks(scrim, "panel"), "||||");
+
+  /* The page showing through is the page, however big the thing at that point
+   * happens to be. */
+  const showing = await page(
+    `<main><article data-name="post" data-at-top data-box="0,0,390,844">a post</article></main>`,
+    FEED
+  );
+  check("the page itself is not something over the page", sheetOf(showing), undefined);
+
+  /* The shell Instagram draws everything in is as big as the glass and is
+   * often positioned. It holds the page rather than covering it. */
+  const holding = await page(
+    `<div data-name="shell" data-at-top style="position: fixed" data-box="0,0,390,844">
+       <main><article>a post</article></main>
+     </div>`,
+    FEED
+  );
+  check("nor is the shell the page is drawn in", sheetOf(holding), undefined);
+
+  /* A toast, a cookie bar, a tooltip: over the page and nowhere near all of
+   * it. */
+  const toast = await page(
+    `<div data-name="toast" data-at-top style="position: fixed" data-box="20,60,350,80">
+       <button>Undo</button>
+     </div><main></main>`,
+    FEED
+  );
+  check("something over part of it is not", sheetOf(toast), undefined);
+
+  /* And a wrapper the size of the glass that is laid out rather than drawn on
+   * top — which is what a page whose content lives outside `main` looks like,
+   * and the one shape this could have taken the row away from for good. */
+  const outside = await page(
+    `<div data-name="elsewhere" data-at-top data-box="0,0,390,844">
+       <article>a post</article>
+     </div><main></main>`,
+    FEED
+  );
+  check("and neither is a page that simply fills the glass", sheetOf(outside), undefined);
+
   /* ── Somebody mid-sentence ───────────────────────────────────────────── */
 
   /* The app is meant to be strict and not rude. Taking half a message away when

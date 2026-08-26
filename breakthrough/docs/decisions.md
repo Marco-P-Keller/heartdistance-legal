@@ -2253,3 +2253,39 @@ never be a minute apart.
 A fourth was on the list and turned out to be already built: tapping the entry
 you are already standing on scrolls the page back to the top, the way Instagram's
 own app does.
+
+---
+
+## A sheet is what is in front of the page
+
+The row already steps aside for a sheet, and the account switcher still came
+back photographed with the pill drawn through "Log in to an Existing Account".
+Three questions were being asked, all of them at the foot of the glass: does
+Instagram say this is a dialog, is there something the shape of a sheet down
+there, and has the page stopped scrolling. The switcher can slip all three. It
+says nothing about being modal. Where its panel sits in Instagram's tree, and
+what `position` they gave it, are theirs to change on any Tuesday. And whether
+the page behind it is pinned is a line in somebody else's stylesheet.
+
+The fourth question is asked in the middle of the glass instead, and it is the
+one that says what a sheet *is* before it says what one looks like: **is the
+page still the thing on the screen?** Every sheet on the mobile web puts a
+dimmed sheet of nothing between you and the page, because that is what a tap
+outside has to land on. It spans the glass, it is drawn on top rather than laid
+out, and it is not part of the page.
+
+`main` tells those two apart, the same way it already does for the shape test.
+The page is what Instagram puts inside `main`; an overlay is drawn in front of
+it; the shell that holds both *contains* it. So the walk out from the point ends
+three ways — inside the page, is the page's shell, or is Quiet's own — and only
+what is left can be a sheet. The last of those three refusals is the one that
+matters most, and it has a check of its own: a wrapper the size of the glass
+that is merely laid out is not a sheet, because that is what a page whose
+content lives outside `main` looks like, and it is the one shape this could have
+taken the row away from for good.
+
+Nothing of Instagram's is marked, moved, padded, lifted or hidden — which is
+still the whole of it. A wrong answer costs a row that fades for a moment, and
+the first flick of a thumb puts it back.
+
+Five checks, which is ninety-one.

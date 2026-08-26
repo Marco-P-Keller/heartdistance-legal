@@ -1707,11 +1707,14 @@
   }
 
   function theSheet() {
-    return theSheetItSaysItIs() || theSheetByItsShape() || theLockedPage();
+    return theSheetItSaysItIs() ||
+      theSheetByItsShape() ||
+      theLockedPage() ||
+      theSheetOverThePage();
   }
 
   /**
-   * The page itself, stopped — which is the most reliable of the three and the
+   * The page itself, stopped — which is the most reliable of the four and the
    * only one that needs nothing of Instagram's markup to be true.
    *
    * A photograph of the real account switcher, on a build that had the two
@@ -1746,6 +1749,79 @@
     if (body.overflow === "hidden" || body.overflowY === "hidden") return true;
     var root = window.getComputedStyle(document.documentElement);
     return root.overflow === "hidden" || root.overflowY === "hidden";
+  }
+
+  /**
+   * Something drawn over the page, which is what a sheet is before it is
+   * anything else.
+   *
+   * The three above all look at the foot of the glass, because that is where
+   * the row is and where the harm is. This one looks at the middle of it, and
+   * asks a different question: is the page still the thing on the screen?
+   *
+   * It exists because the account switcher can slip all three. It says nothing
+   * about being modal, its panel sits somewhere in Instagram's tree that the
+   * shape test cannot count on, and whether the page behind it is pinned is
+   * Instagram's business and could be true one week and not the next. What is
+   * left is the one thing every sheet on the mobile web does and none of them
+   * can skip: it puts a dimmed sheet of nothing between you and the page, so
+   * that a tap outside closes it. That thing spans the glass, it is drawn on
+   * top, and it is not part of the page.
+   *
+   * Which is the whole test. Ask what is drawn two fifths of the way down —
+   * clear of Instagram's own header, and above the top edge of any sheet that
+   * leaves that much of the page showing — and walk out from it. If the page
+   * is what is there, there is no sheet. If something that covers the glass is
+   * there instead, and the page is behind it rather than around it, there is.
+   *
+   * `main` does the work of telling those two apart, the same way it does for
+   * the shape test: the page is what Instagram puts inside `main`, an overlay
+   * is drawn in front of it, and the shell that holds both *contains* it. So
+   * three answers end the walk — inside the page, is the page's shell, or is
+   * Quiet's own — and only what is left can be a sheet.
+   */
+  var OVER_THE_PAGE = 0.4;
+
+  function theSheetOverThePage() {
+    if (!document.elementFromPoint) return null;
+    /* No `main` is no way to tell an overlay from the page it covers, and the
+     * honest answer to a question that cannot be answered is nothing at all. */
+    var main = document.querySelector("main");
+    if (!main) return null;
+
+    var width = window.innerWidth || 390;
+    var height = window.innerHeight || 844;
+    var node = document.elementFromPoint(
+      Math.round(width / 2),
+      Math.round(height * OVER_THE_PAGE)
+    );
+
+    while (node && node !== document.body && node !== document.documentElement) {
+      /* Quiet's own furniture, and the page itself showing through. */
+      if (ours(node)) return null;
+      if (main.contains(node)) return null;
+      /* Out of the overlay and into the shell Instagram draws everything in,
+       * the page included. Nothing from here up is in front of anything. */
+      if (node.contains(main)) return null;
+      if (drawnOverTheGlass(node, width, height)) return node;
+      node = node.parentElement;
+    }
+    return null;
+  }
+
+  /**
+   * As wide and as tall as the glass, and drawn rather than laid out.
+   *
+   * The second half matters as much as the first. A page's own wrapper can be
+   * exactly the size of the glass and is still the page; what is put in front
+   * of one is positioned, because that is the only way to be in front.
+   */
+  function drawnOverTheGlass(node, width, height) {
+    var box = node.getBoundingClientRect();
+    if (!box || box.width < width * 0.9) return false;
+    if (box.height < height * 0.9) return false;
+    var position = window.getComputedStyle(node).position;
+    return position === "fixed" || position === "absolute";
   }
 
   /** The easy half, and the one Instagram is under no obligation to give. */
