@@ -14,18 +14,20 @@
 <body>
 
 <h1>HeartDistance – Datenschutzerklärung</h1>
-<p class="muted">Stand: Juli 2026 · English version below</p>
+<p class="muted">Stand: Oktober 2026 · English version below</p>
 
 <h2>Kurzfassung</h2>
-<p>HeartDistance verbindet genau zwei Menschen. Es gibt keine Konten, keine Werbung und kein Tracking. Nur euer jeweils letzter Standort wird gespeichert — nie ein Verlauf, nie auf einer Karte, nie sichtbar für Dritte.</p>
+<p>HeartDistance verbindet genau zwei Menschen. Es gibt keine Konten, keine Werbung und kein Tracking. Von eurem Standort wird nur der jeweils letzte gespeichert — nie ein Verlauf, nie auf einer Karte, nie sichtbar für Dritte. Was ihr euch schickt, sieht nur ihr beide.</p>
 
 <h2>Welche Daten verarbeitet werden</h2>
 <ul>
   <li><strong>Standort:</strong> Der letzte bekannte Standort deines Geräts wird in Apples iCloud (CloudKit) gespeichert, damit die App die Distanz zwischen dir und deinem Partner berechnen kann. Es wird kein Standortverlauf angelegt.</li>
   <li><strong>Profil:</strong> Der von dir gewählte Anzeigename und ein Emoji.</li>
-  <li><strong>Verbindungsdaten:</strong> Euer Pairing-Code, Meilensteine (größte/kleinste Distanz), gesendete Pulse und ein optionales Wiedersehens-Datum.</li>
+  <li><strong>Was ihr euch schickt:</strong> Fotos mit Bildunterschrift, kurze Notizen, Pulse, eure Antworten auf die Frage des Tages und, wenn ihr „Unterwegs zu dir“ startet, der Reise-Status.</li>
+  <li><strong>Verbindungsdaten:</strong> Euer Pairing-Code, Meilensteine (größte/kleinste Distanz), ein optionales Wiedersehens-Datum, eine zufällige Geräte-ID je Gerät (damit z.&nbsp;B. iPhone und iPad einer Person als dieselbe Seite erkannt werden) und, falls einer von euch Plus abonniert hat, dessen Ablaufdatum (damit Plus für beide gilt).</li>
 </ul>
-<p>Alle Daten liegen in Apples CloudKit-Infrastruktur. Wir betreiben keine eigenen Server und haben keinen Zugriff auf eure Inhalte.</p>
+<p>Diese Daten liegen in der CloudKit-Datenbank der App bei Apple (iCloud). Die Datenbank gehört zum Entwicklerkonto von HeartDistance; der Entwickler kann technisch darauf zugreifen. Die Daten werden nur für die Funktionen der App verwendet und nicht ausgewertet, verkauft oder weitergegeben.</p>
+<p><strong>Sofortige Widget-Aktualisierung (ab iOS 26):</strong> Damit ein neues Foto sofort im Widget deines Partners erscheint, speichert die App eine Push-Adresse des Widgets (von Apple vergeben) zusammen mit eurem Pairing-Code auf einem kleinen Server des Entwicklers bei Google Firebase (Rechenzentrum USA). Der Server schickt nur das Signal „neues Foto“ über Apples Push-Dienst — Fotos, Texte oder Standorte gehen nie über diesen Server.</p>
 
 <h2>Was nicht passiert</h2>
 <ul>
@@ -35,7 +37,7 @@
 </ul>
 
 <h2>Analyse</h2>
-<p>Zur Verbesserung der App können anonyme Nutzungssignale (z.&nbsp;B. „Pairing abgeschlossen“) über TelemetryDeck erfasst werden — ohne Namen, ohne Standorte, ohne geräteübergreifende Identifier. TelemetryDeck ist ein datenschutzfreundlicher Dienst mit Servern in der EU.</p>
+<p>Zur Verbesserung der App werden anonyme Nutzungssignale (z.&nbsp;B. „Pairing abgeschlossen“, „Einladung geteilt“, „Plus gekauft“ mit dem gewählten Abo) über TelemetryDeck erfasst — ohne Namen, ohne Standorte, ohne Inhalte. Statt einer Person wird nur eine gehashte, nicht rückverfolgbare Kennung des Geräts übermittelt. Dazu gehört, welche Variante eines Bildschirms dein Gerät zufällig zeigt (A/B-Test), damit wir sehen, welche Darstellung Paaren besser hilft, ob Mitteilungen und Standort erlaubt sind, und bei einem fehlgeschlagenen Verbinden ein kurzer Grund wie „Code nicht gefunden“ oder „offline“. TelemetryDeck ist ein datenschutzfreundlicher Dienst mit Servern in der EU.</p>
 
 <h2>Abo</h2>
 <p>HeartDistance Plus wird über Apple abgerechnet. Zahlungsdaten verarbeitet ausschließlich Apple; wir erhalten keine Zahlungsinformationen.</p>
@@ -49,18 +51,20 @@
 <hr>
 
 <h1>HeartDistance – Privacy Policy</h1>
-<p class="muted">Last updated: July 2026</p>
+<p class="muted">Last updated: October 2026</p>
 
 <h2>Summary</h2>
-<p>HeartDistance connects exactly two people. There are no accounts, no ads, and no tracking. Only your latest location is stored — never a history, never on a map, never visible to anyone else.</p>
+<p>HeartDistance connects exactly two people. There are no accounts, no ads, and no tracking. Only your latest location is stored — never a history, never on a map, never visible to anyone else. What you send each other is seen only by the two of you.</p>
 
 <h2>Data we process</h2>
 <ul>
   <li><strong>Location:</strong> Your device's last known location is stored in Apple's iCloud (CloudKit) so the app can compute the distance between you and your partner. No location history is kept.</li>
   <li><strong>Profile:</strong> The display name and emoji you choose.</li>
-  <li><strong>Connection data:</strong> Your pairing code, milestones (closest/farthest distance), pulses sent, and an optional reunion date.</li>
+  <li><strong>What you send each other:</strong> photos with their captions, short notes, pulses, your answers to the question of the day and, when you start “On my way to you”, the trip status.</li>
+  <li><strong>Connection data:</strong> Your pairing code, milestones (closest/farthest distance), an optional reunion date, a random device ID per device (so that, for example, one person's iPhone and iPad are recognized as the same side) and, if one of you subscribes to Plus, its expiry date (so Plus covers both of you).</li>
 </ul>
-<p>All data lives in Apple's CloudKit infrastructure. We run no servers of our own and cannot access your content.</p>
+<p>This data is stored in the app's CloudKit database at Apple (iCloud). The database belongs to the HeartDistance developer account, and the developer can technically access it. The data is used only to make the app's features work; it is not analysed, sold or shared.</p>
+<p><strong>Instant widget updates (iOS 26 and later):</strong> so that a new photo appears in your partner's widget right away, the app stores the widget's push address (issued by Apple) together with your pairing code on a small developer-run server at Google Firebase (data center in the USA). The server only sends a “new photo” signal through Apple's push service — photos, texts or locations never pass through it.</p>
 
 <h2>What we don't do</h2>
 <ul>
@@ -70,7 +74,7 @@
 </ul>
 
 <h2>Analytics</h2>
-<p>To improve the app, anonymous usage signals (e.g. “pairing completed”) may be collected via TelemetryDeck — no names, no locations, no cross-device identifiers. TelemetryDeck is a privacy-first service hosted in the EU.</p>
+<p>To improve the app, anonymous usage signals (e.g. “pairing completed”, “invite shared”, “Plus purchased” with the chosen plan) are collected via TelemetryDeck — no names, no locations, no content. Instead of a person, only a hashed, non-reversible identifier of the device is sent. This includes which variant of a screen your device randomly shows (A/B test), so we can see which presentation helps couples more, whether notifications and location are allowed, and, when pairing fails, a short reason such as “code not found” or “offline”. TelemetryDeck is a privacy-first service hosted in the EU.</p>
 
 <h2>Subscription</h2>
 <p>HeartDistance Plus is billed by Apple. Payment data is handled exclusively by Apple; we never receive payment information.</p>
