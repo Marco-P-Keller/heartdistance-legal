@@ -14,20 +14,29 @@
 <body>
 
 <h1>HeartDistance – Datenschutzerklärung</h1>
-<p class="muted">Stand: Oktober 2026 · English version below</p>
+<p class="muted">Stand: 28. Oktober 2026 · <a href="#en">English version below</a></p>
+
+<h2>Verantwortlicher</h2>
+<p>Connexa GmbH, Wilerstrasse 82, 8370 Sirnach, Schweiz<br>
+vertreten durch den Geschäftsführer Marco P. Keller<br>
+E-Mail: <a href="mailto:info@connexa-gmbh.ch">info@connexa-gmbh.ch</a> (Datenschutz-Anfragen auch an <a href="mailto:marco.p.keller@gmail.com">marco.p.keller@gmail.com</a>)</p>
 
 <h2>Kurzfassung</h2>
-<p>HeartDistance verbindet genau zwei Menschen. Es gibt keine Konten, keine Werbung und kein Tracking. Von eurem Standort wird nur der jeweils letzte gespeichert — nie ein Verlauf, nie auf einer Karte, nie sichtbar für Dritte. Was ihr euch schickt, sieht nur ihr beide.</p>
+<p>HeartDistance verbindet genau zwei Menschen. Es gibt keine Konten, keine Werbung und kein Tracking. Von eurem Standort wird nur der jeweils letzte gespeichert, auf etwa 100 Meter gerundet — nie ein Verlauf, nie auf einer Karte. Euer gemeinsamer Datensatz ist nur über euren Pairing-Code auffindbar; teilt diesen Code deshalb nur mit eurem Partner.</p>
 
 <h2>Welche Daten verarbeitet werden</h2>
 <ul>
-  <li><strong>Standort:</strong> Der letzte bekannte Standort deines Geräts wird in Apples iCloud (CloudKit) gespeichert, damit die App die Distanz zwischen dir und deinem Partner berechnen kann. Es wird kein Standortverlauf angelegt.</li>
+  <li><strong>Standort:</strong> Der letzte bekannte Standort des Geräts, das auf deiner Seite die Distanz misst, auf drei Nachkommastellen gerundet (etwa 100 Meter; bis Version 4.2.1 ungerundet). Er wird bei jeder Aktualisierung überschrieben; ein Standortverlauf wird nicht angelegt. Für die Distanz braucht die App die Standortfreigabe „Immer“, damit sie auch im Hintergrund stimmt.</li>
   <li><strong>Profil:</strong> Der von dir gewählte Anzeigename und ein Emoji.</li>
-  <li><strong>Was ihr euch schickt:</strong> Fotos mit Bildunterschrift, kurze Notizen, Pulse, eure Antworten auf die Frage des Tages und, wenn ihr „Unterwegs zu dir“ startet, der Reise-Status.</li>
-  <li><strong>Verbindungsdaten:</strong> Euer Pairing-Code, Meilensteine (größte/kleinste Distanz), ein optionales Wiedersehens-Datum, eine zufällige Geräte-ID je Gerät (damit z.&nbsp;B. iPhone und iPad einer Person als dieselbe Seite erkannt werden) und, falls einer von euch Plus abonniert hat, dessen Ablaufdatum (damit Plus für beide gilt).</li>
+  <li><strong>Was ihr euch schickt:</strong> das jeweils letzte Foto mit Bildunterschrift, die letzte Notiz, Pulse, eure Antworten auf die Frage des Tages und, wenn ihr „Unterwegs zu dir“ startet, der Reise-Status.</li>
+  <li><strong>Verbindungsdaten:</strong> Euer Pairing-Code, Meilensteine (größte/kleinste Distanz), ein optionales Wiedersehens-Datum, eine zufällige Geräte-ID je Gerät (damit z.&nbsp;B. iPhone und iPad einer Person als dieselbe Seite erkannt werden) und, nur bei früheren Abonnenten, das Ablaufdatum von HeartDistance Plus.</li>
 </ul>
-<p>Diese Daten liegen in der CloudKit-Datenbank der App bei Apple (iCloud). Die Datenbank gehört zum Entwicklerkonto von HeartDistance; der Entwickler kann technisch darauf zugreifen. Die Daten werden nur für die Funktionen der App verwendet und nicht ausgewertet, verkauft oder weitergegeben.</p>
-<p><strong>Sofortige Widget-Aktualisierung (ab iOS 26):</strong> Damit ein neues Foto sofort im Widget deines Partners erscheint, speichert die App eine Push-Adresse des Widgets (von Apple vergeben) zusammen mit eurem Pairing-Code auf einem kleinen Server des Entwicklers bei Google Firebase (Rechenzentrum USA). Der Server schickt nur das Signal „neues Foto“ über Apples Push-Dienst — Fotos, Texte oder Standorte gehen nie über diesen Server.</p>
+
+<h2>Wo die Daten liegen und wer darauf zugreifen kann</h2>
+<p>Diese Daten liegen in der öffentlichen CloudKit-Datenbank der App bei Apple (iCloud). „Öffentlich“ heißt hier: Die Datenbank gehört zur App, nicht zu deinem persönlichen iCloud-Konto, und jede Installation von HeartDistance kann darin lesen. Euer Datensatz ist nicht durchsuchbar oder aufgelistet, sondern wird nur über euren 6-stelligen Pairing-Code gefunden. Wer euren Code kennt, könnte euren Datensatz deshalb mit technischem Aufwand lesen. Teilt den Code und den Einladungslink nur mit eurem Partner.</p>
+<p>Apple betreibt die Datenbank als Auftragsverarbeiter. Der Verantwortliche kann technisch auf die Datenbank zugreifen, tut das aber nur zur Fehlerbehebung. Die Daten werden nur für die Funktionen der App verwendet und nicht ausgewertet, verkauft oder weitergegeben.</p>
+<p><strong>Sofortige Widget-Aktualisierung (ab iOS 26):</strong> Damit ein neues Foto sofort im Widget deines Partners erscheint, speichert die App eine Push-Adresse des Widgets (von Apple vergeben) zusammen mit eurem Pairing-Code auf einem kleinen Server bei Google Firebase (Google LLC, Rechenzentrum USA, us-central1). Der Server schickt nur das Signal „neues Foto“ über Apples Push-Dienst — Fotos, Texte oder Standorte gehen nie über diesen Server.</p>
+<p><strong>Übermittlung in die USA:</strong> Google LLC und Apple Inc. sind unter dem EU-US Data Privacy Framework und dem Swiss-U.S. Data Privacy Framework zertifiziert; zusätzlich gelten die Standardvertragsklauseln der EU-Kommission in den Datenschutzbedingungen von Google Cloud und Apple.</p>
 
 <h2>Was nicht passiert</h2>
 <ul>
@@ -37,34 +46,63 @@
 </ul>
 
 <h2>Analyse</h2>
-<p>Zur Verbesserung der App werden anonyme Nutzungssignale (z.&nbsp;B. „Pairing abgeschlossen“, „Einladung geteilt“, „Plus gekauft“ mit dem gewählten Abo) über TelemetryDeck erfasst — ohne Namen, ohne Standorte, ohne Inhalte. Statt einer Person wird nur eine gehashte, nicht rückverfolgbare Kennung des Geräts übermittelt. Dazu gehört, welche Variante eines Bildschirms dein Gerät zufällig zeigt (A/B-Test), damit wir sehen, welche Darstellung Paaren besser hilft, ob Mitteilungen und Standort erlaubt sind, und bei einem fehlgeschlagenen Verbinden ein kurzer Grund wie „Code nicht gefunden“ oder „offline“. TelemetryDeck ist ein datenschutzfreundlicher Dienst mit Servern in der EU.</p>
-
-<h2>Abo</h2>
-<p>HeartDistance Plus wird über Apple abgerechnet. Zahlungsdaten verarbeitet ausschließlich Apple; wir erhalten keine Zahlungsinformationen.</p>
+<p>Zur Verbesserung der App werden anonyme Nutzungssignale (z.&nbsp;B. „Pairing abgeschlossen“, „Einladung geteilt“) über TelemetryDeck (TelemetryDeck GmbH, Deutschland, Server in der EU) erfasst — ohne Namen, ohne Standorte, ohne Inhalte. Statt einer Person wird nur eine gehashte, nicht rückverfolgbare Kennung des Geräts übermittelt. Dazu gehört, welche Variante eines Bildschirms dein Gerät zufällig zeigt (A/B-Test), ob Mitteilungen und Standort erlaubt sind, und bei einem fehlgeschlagenen Verbinden ein kurzer Grund wie „Code nicht gefunden“ oder „offline“.</p>
 
 <h2>Wetter</h2>
-<p>Für die Wetteranzeige wird der Standort deines Partners an Apple WeatherKit übermittelt. <span class="muted">Weather-Daten: <a href="https://weatherkit.apple.com/legal-attribution.html"> Apple Weather</a>.</span></p>
+<p>Für die Wetteranzeige wird der (gerundete) Standort deines Partners an Apple WeatherKit übermittelt. Wetterdaten: <a href="https://weatherkit.apple.com/legal-attribution.html"> Apple Weather</a>.</p>
 
-<h2>Deine Rechte &amp; Löschung</h2>
-<p>„Den Faden lösen“ in den Einstellungen entfernt deine Daten aus dem gemeinsamen Datensatz. Bei Fragen oder Löschwünschen: <a href="mailto:marco.p.keller@gmail.com">marco.p.keller@gmail.com</a></p>
+<h2>Frühere Abos</h2>
+<p>Seit Version 4.2.0 sind alle Funktionen gratis. Das frühere Abo „HeartDistance Plus“ wird seit dem 28. Oktober 2026 nicht mehr verkauft. Abgerechnet wurde ausschließlich über Apple; wir erhalten keine Zahlungsinformationen. Die App liest nur, ob auf deiner Apple-ID noch ein Abo aktiv ist, um dich darauf hinzuweisen.</p>
+
+<h2>Rechtsgrundlagen</h2>
+<ul>
+  <li><strong>Vertrag (Art. 6 Abs. 1 lit. b DSGVO):</strong> Standort, Profil, was ihr euch schickt und Verbindungsdaten — ohne sie kann die App ihre Funktion nicht erfüllen.</li>
+  <li><strong>Einwilligung (Art. 6 Abs. 1 lit. a DSGVO):</strong> Zugriff auf Standort, Mitteilungen, Kamera und Fotos über die Dialoge von iOS. Du kannst sie jederzeit in den iOS-Einstellungen widerrufen.</li>
+  <li><strong>Berechtigtes Interesse (Art. 6 Abs. 1 lit. f DSGVO):</strong> anonyme Nutzungsanalyse und die Push-Adresse für die Widget-Aktualisierung.</li>
+</ul>
+<p>Für Personen in der Schweiz gilt das revidierte Datenschutzgesetz (revDSG); die Bearbeitung erfolgt nach denselben Grundsätzen.</p>
+
+<h2>Speicherdauer und Löschung</h2>
+<ul>
+  <li>Standort, letzte Notiz und letztes Foto werden bei jeder neuen Übermittlung überschrieben.</li>
+  <li>Push-Nachrichten zwischen euch (Pulse, Hinweise) werden gelöscht, sobald das Gerät deines Partners sie abgeholt hat.</li>
+  <li><strong>„Den Faden lösen“</strong> in den Einstellungen löscht ab Version 4.2.2 deine Seite des Datensatzes (Name, Emoji, Standort, Foto, Notiz, Pulse), deine Antworten auf die Frage des Tages, deinen Reise-Status, deine Geräteeinträge und deine Widget-Push-Adresse. Löst auch die zweite Person den Faden, wird der gesamte Datensatz mit allen verbleibenden Einträgen gelöscht.</li>
+  <li>Gespeicherte Erinnerungen und Einstellungen liegen nur auf deinem Gerät und werden mit der App gelöscht.</li>
+  <li>Anonyme Analysedaten bewahrt TelemetryDeck nach eigenen Fristen auf; sie lassen sich keiner Person zuordnen.</li>
+</ul>
+
+<h2>Deine Rechte</h2>
+<p>Du hast das Recht auf Auskunft, Berichtigung, Löschung, Einschränkung der Verarbeitung, Datenübertragbarkeit und Widerspruch sowie das Recht, eine Einwilligung jederzeit zu widerrufen. Schreib dafür an <a href="mailto:info@connexa-gmbh.ch">info@connexa-gmbh.ch</a>. Du kannst dich außerdem bei einer Aufsichtsbehörde beschweren: in der Schweiz beim Eidgenössischen Datenschutz- und Öffentlichkeitsbeauftragten (EDÖB, <a href="https://www.edoeb.admin.ch">edoeb.admin.ch</a>), in der EU bei der Datenschutzbehörde deines Wohnsitzlandes.</p>
+
+<h2>Sicherheit</h2>
+<p>Niemand darf dich zwingen, deinen Standort zu teilen. Du kannst den Faden jederzeit lösen. Hilfe und Beratungsstellen: <a href="safety.html">Sicherheit &amp; Hilfe</a>.</p>
 
 <hr>
 
-<h1>HeartDistance – Privacy Policy</h1>
-<p class="muted">Last updated: October 2026</p>
+<h1 id="en">HeartDistance – Privacy Policy</h1>
+<p class="muted">Last updated: October 28, 2026</p>
+
+<h2>Controller</h2>
+<p>Connexa GmbH, Wilerstrasse 82, 8370 Sirnach, Switzerland<br>
+represented by its managing director Marco P. Keller<br>
+Email: <a href="mailto:info@connexa-gmbh.ch">info@connexa-gmbh.ch</a> (privacy requests also to <a href="mailto:marco.p.keller@gmail.com">marco.p.keller@gmail.com</a>)</p>
 
 <h2>Summary</h2>
-<p>HeartDistance connects exactly two people. There are no accounts, no ads, and no tracking. Only your latest location is stored — never a history, never on a map, never visible to anyone else. What you send each other is seen only by the two of you.</p>
+<p>HeartDistance connects exactly two people. There are no accounts, no ads, and no tracking. Only your latest location is stored, rounded to about 100 meters — never a history, never on a map. Your shared record can only be found with your pairing code, so share that code with your partner only.</p>
 
 <h2>Data we process</h2>
 <ul>
-  <li><strong>Location:</strong> Your device's last known location is stored in Apple's iCloud (CloudKit) so the app can compute the distance between you and your partner. No location history is kept.</li>
+  <li><strong>Location:</strong> The last known location of the device that measures the distance on your side, rounded to three decimal places (about 100 meters; unrounded up to version 4.2.1). It is overwritten with every update; no location history is kept. The app needs “Always” location access so the distance stays right in the background.</li>
   <li><strong>Profile:</strong> The display name and emoji you choose.</li>
-  <li><strong>What you send each other:</strong> photos with their captions, short notes, pulses, your answers to the question of the day and, when you start “On my way to you”, the trip status.</li>
-  <li><strong>Connection data:</strong> Your pairing code, milestones (closest/farthest distance), an optional reunion date, a random device ID per device (so that, for example, one person's iPhone and iPad are recognized as the same side) and, if one of you subscribes to Plus, its expiry date (so Plus covers both of you).</li>
+  <li><strong>What you send each other:</strong> the latest photo with its caption, the latest note, pulses, your answers to the question of the day and, when you start “On my way to you”, the trip status.</li>
+  <li><strong>Connection data:</strong> Your pairing code, milestones (closest/farthest distance), an optional reunion date, a random device ID per device (so that, for example, one person's iPhone and iPad are recognized as the same side) and, for former subscribers only, the expiry date of HeartDistance Plus.</li>
 </ul>
-<p>This data is stored in the app's CloudKit database at Apple (iCloud). The database belongs to the HeartDistance developer account, and the developer can technically access it. The data is used only to make the app's features work; it is not analysed, sold or shared.</p>
-<p><strong>Instant widget updates (iOS 26 and later):</strong> so that a new photo appears in your partner's widget right away, the app stores the widget's push address (issued by Apple) together with your pairing code on a small developer-run server at Google Firebase (data center in the USA). The server only sends a “new photo” signal through Apple's push service — photos, texts or locations never pass through it.</p>
+
+<h2>Where the data is stored and who can access it</h2>
+<p>This data is stored in the app's public CloudKit database at Apple (iCloud). “Public” means the database belongs to the app rather than to your personal iCloud account, and every installation of HeartDistance can read from it. Your record is not listed or searchable; it can only be found with your 6-character pairing code. Anyone who knows your code could therefore read your record with technical effort. Share your code and invite link with your partner only.</p>
+<p>Apple runs the database as a processor. The controller can technically access the database but does so only to fix problems. The data is used only to make the app's features work; it is not analysed, sold or shared.</p>
+<p><strong>Instant widget updates (iOS 26 and later):</strong> so that a new photo appears in your partner's widget right away, the app stores the widget's push address (issued by Apple) together with your pairing code on a small server at Google Firebase (Google LLC, data center in the USA, us-central1). The server only sends a “new photo” signal through Apple's push service — photos, texts or locations never pass through it.</p>
+<p><strong>Transfers to the USA:</strong> Google LLC and Apple Inc. are certified under the EU-U.S. Data Privacy Framework and the Swiss-U.S. Data Privacy Framework; in addition, the European Commission's Standard Contractual Clauses in the Google Cloud and Apple data processing terms apply.</p>
 
 <h2>What we don't do</h2>
 <ul>
@@ -74,16 +112,36 @@
 </ul>
 
 <h2>Analytics</h2>
-<p>To improve the app, anonymous usage signals (e.g. “pairing completed”, “invite shared”, “Plus purchased” with the chosen plan) are collected via TelemetryDeck — no names, no locations, no content. Instead of a person, only a hashed, non-reversible identifier of the device is sent. This includes which variant of a screen your device randomly shows (A/B test), so we can see which presentation helps couples more, whether notifications and location are allowed, and, when pairing fails, a short reason such as “code not found” or “offline”. TelemetryDeck is a privacy-first service hosted in the EU.</p>
-
-<h2>Subscription</h2>
-<p>HeartDistance Plus is billed by Apple. Payment data is handled exclusively by Apple; we never receive payment information.</p>
+<p>To improve the app, anonymous usage signals (e.g. “pairing completed”, “invite shared”) are collected via TelemetryDeck (TelemetryDeck GmbH, Germany, servers in the EU) — no names, no locations, no content. Instead of a person, only a hashed, non-reversible identifier of the device is sent. This includes which variant of a screen your device randomly shows (A/B test), whether notifications and location are allowed, and, when pairing fails, a short reason such as “code not found” or “offline”.</p>
 
 <h2>Weather</h2>
-<p>To show your partner's weather, their location is sent to Apple WeatherKit. <span class="muted">Weather data: <a href="https://weatherkit.apple.com/legal-attribution.html"> Apple Weather</a>.</span></p>
+<p>To show your partner's weather, their (rounded) location is sent to Apple WeatherKit. Weather data: <a href="https://weatherkit.apple.com/legal-attribution.html"> Apple Weather</a>.</p>
 
-<h2>Your rights &amp; deletion</h2>
-<p>“Untie the thread” in Settings removes your data from the shared record. Questions or deletion requests: <a href="mailto:marco.p.keller@gmail.com">marco.p.keller@gmail.com</a></p>
+<h2>Former subscriptions</h2>
+<p>Since version 4.2.0 every feature is free. The former “HeartDistance Plus” subscription has not been sold since October 28, 2026. Billing was handled exclusively by Apple; we never receive payment information. The app only reads whether your Apple ID still has an active subscription, to let you know.</p>
+
+<h2>Legal bases</h2>
+<ul>
+  <li><strong>Contract (Art. 6(1)(b) GDPR):</strong> location, profile, what you send each other and connection data — the app cannot work without them.</li>
+  <li><strong>Consent (Art. 6(1)(a) GDPR):</strong> access to location, notifications, camera and photos through the iOS dialogs. You can withdraw it at any time in the iOS Settings.</li>
+  <li><strong>Legitimate interest (Art. 6(1)(f) GDPR):</strong> anonymous usage analytics and the push address for widget updates.</li>
+</ul>
+<p>For people in Switzerland, the revised Federal Act on Data Protection (revFADP) applies; processing follows the same principles.</p>
+
+<h2>Retention and deletion</h2>
+<ul>
+  <li>Location, the latest note and the latest photo are overwritten with every new update.</li>
+  <li>Push messages between you (pulses, heads-ups) are deleted as soon as your partner's device has collected them.</li>
+  <li><strong>“Untie the thread”</strong> in Settings deletes, from version 4.2.2, your side of the record (name, emoji, location, photo, note, pulses), your answers to the question of the day, your trip status, your device entries and your widget push address. When the second person unties too, the whole record is deleted with every remaining entry.</li>
+  <li>Saved memories and settings live only on your device and are deleted with the app.</li>
+  <li>TelemetryDeck keeps anonymous analytics according to its own retention periods; they cannot be linked to a person.</li>
+</ul>
+
+<h2>Your rights</h2>
+<p>You have the right to access, rectification, erasure, restriction of processing, data portability and objection, and the right to withdraw consent at any time. Write to <a href="mailto:info@connexa-gmbh.ch">info@connexa-gmbh.ch</a>. You can also lodge a complaint with a supervisory authority: in Switzerland the Federal Data Protection and Information Commissioner (FDPIC, <a href="https://www.edoeb.admin.ch">edoeb.admin.ch</a>), in the EU the data protection authority of your country of residence.</p>
+
+<h2>Safety</h2>
+<p>No one may force you to share your location. You can untie the thread at any time. Help and support services: <a href="safety.html">Safety &amp; help</a>.</p>
 
 </body>
 </html>
